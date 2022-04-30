@@ -1,42 +1,41 @@
 use assert_cmd::crate_name;
 use assert_cmd::Command;
-use predicates::prelude::*;
+use predicates::str::contains;
 
 #[test]
 fn displays_help() {
-    let assert = run_with("-h");
-    assert.success().stdout(predicate::str::contains("USAGE"));
+    run_and_assert("-h").success().stdout(contains("USAGE"));
 }
 
 #[test]
 fn displays_version() {
-    let assert = run_with("-V");
-    assert.success();
+    run_and_assert("-V").success();
 }
 
 #[test]
 fn fails_with_random_args() {
-    let assert = run_with("random");
-    assert.failure();
+    run_and_assert("random").failure();
 }
 
 #[test]
 fn starts_program() {
-    let assert = run_with("start -r 100");
-    assert.success();
+    run_and_assert("status")
+        .failure()
+        .stderr(contains("No status. Start a program first!"));
+    run_and_assert("start -r 100").success();
+    // run_and_assert("status").success();
 }
 
 #[test]
 fn starting_program_needs_reference_weight() {
-    let assert = run_with("start");
-    assert
+    run_and_assert("start")
         .failure()
-        .stderr(predicate::str::contains("REFERENCE_WEIGHT"));
+        .stderr(contains("REFERENCE_WEIGHT"));
 }
 
-fn run_with(args: &str) -> assert_cmd::assert::Assert {
+fn run_and_assert(args_to_run_with: &str) -> assert_cmd::assert::Assert {
     Command::cargo_bin(crate_name!())
         .unwrap()
-        .args(args.split_whitespace())
+        .args(args_to_run_with.split_whitespace())
         .assert()
 }

@@ -5,8 +5,11 @@
 
 #![warn(missing_docs)]
 
+use anyhow::Result;
+
 mod controllers;
 
-fn main() {
-    controllers::cli::parse_arguments_and_handle_help_and_version();
+fn main() -> Result<()> {
+    controllers::cli::start_program_with_args()?;
+    Ok(())
 }

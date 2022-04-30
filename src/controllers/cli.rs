@@ -1,13 +1,14 @@
+use anyhow::{anyhow, Result};
 use clap::{Parser, Subcommand};
 
-#[derive(Parser)]
+#[derive(Debug, Parser)]
 #[clap(author, version, about)]
 struct Args {
     #[clap(subcommand)]
-    start: Commands,
+    command: Commands,
 }
 
-#[derive(Subcommand)]
+#[derive(Debug, Subcommand)]
 enum Commands {
     /// Start a new weightlifting routine! Let's GOOOoOoOo!!!!!1
     Start {
@@ -16,8 +17,19 @@ enum Commands {
         #[clap(short)]
         reference_weight: u64,
     },
+
+    /// Display current status of your lifting program.
+    Status {},
 }
 
-pub fn parse_arguments_and_handle_help_and_version() {
-    Args::parse();
+pub fn start_program_with_args() -> Result<()> {
+    let args = Args::parse();
+    match &args.command {
+        Commands::Status {} => {
+            return Err(anyhow!("No status. Start a program first!"));
+        }
+        _ => {}
+    }
+
+    Ok(())
 }
