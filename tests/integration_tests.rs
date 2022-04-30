@@ -22,8 +22,16 @@ fn fails_with_random_args() {
 
 #[test]
 fn starts_program() {
-    let assert = run_with(&["start"]);
+    let assert = run_with(&["start", "-r", "100"]);
     assert.success();
+}
+
+#[test]
+fn starts_program_needs_reference_weight() {
+    let assert = run_with(&["start"]);
+    assert
+        .failure()
+        .stderr(predicate::str::contains("REFERENCE_WEIGHT"));
 }
 
 fn run_with(args: &[&str]) -> assert_cmd::assert::Assert {
