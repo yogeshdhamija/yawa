@@ -1,3 +1,5 @@
+mod controllers;
+
 fn main() {
-    println!("Hello, world!");
+    controllers::cli::parse_arguments_and_handle_help_and_version();
 }
