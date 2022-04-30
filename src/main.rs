@@ -4,7 +4,7 @@
 //!
 //! Program based on the GZCL method
 //!
-//! Relative weights from SymmetricStrength.io
+//! Relative weights from SymmetricStrength.com
 
 #![warn(missing_docs)]
 
