@@ -1,9 +1,6 @@
+use crate::PersistanceAdapter;
 use anyhow::{anyhow, Result};
 use clap::{Parser, Subcommand};
-use std::fs::create_dir_all;
-use std::fs::File;
-use std::io::Write;
-use std::path::Path;
 
 #[derive(Debug, Parser)]
 #[clap(author, version, about)]
@@ -26,20 +23,18 @@ enum Commands {
     Status {},
 }
 
-pub fn start_program_with_args() -> Result<()> {
+pub fn start_program_with_args(persistance_adapter: &impl PersistanceAdapter) -> Result<()> {
     let args = Args::parse();
     match &args.command {
         Commands::Status {} => {
-            if !Path::new("/tmp/yawa/saved.json").is_file() {
+            if persistance_adapter.summon()? {
                 return Err(anyhow!("No status. Start a program first!"));
             }
         }
         Commands::Start {
             reference_weight: _,
         } => {
-            create_dir_all("/tmp/yawa")?;
-            let mut file = File::create("/tmp/yawa/saved.json")?;
-            file.write_all(b"Hello, world!")?;
+            persistance_adapter.persist()?;
         }
     }
 
