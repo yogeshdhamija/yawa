@@ -1,6 +1,8 @@
 use assert_cmd::crate_name;
 use assert_cmd::Command;
 use predicates::str::contains;
+use std::fs::remove_dir_all;
+use std::path::Path;
 
 #[test]
 fn displays_help() {
@@ -19,11 +21,12 @@ fn fails_with_random_args() {
 
 #[test]
 fn starts_program() {
+    clean_slate();
     run_and_assert("status")
         .failure()
         .stderr(contains("No status. Start a program first!"));
     run_and_assert("start -r 100").success();
-    // run_and_assert("status").success();
+    run_and_assert("status").success();
 }
 
 #[test]
@@ -31,6 +34,10 @@ fn starting_program_needs_reference_weight() {
     run_and_assert("start")
         .failure()
         .stderr(contains("REFERENCE_WEIGHT"));
+}
+
+fn clean_slate() {
+    remove_dir_all(Path::new("/tmp/yawa")).unwrap();
 }
 
 fn run_and_assert(args_to_run_with: &str) -> assert_cmd::assert::Assert {
