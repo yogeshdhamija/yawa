@@ -6,8 +6,10 @@ authors = ["Yogesh Dhamija"]
 description = "YAWA: Yet Another Workout App keeps track of your lifts and weights, through a program based on the GZCL method, and relative weights from SymmetricStrength.com."
 
 [dependencies]
-clap = { version = "*", features = ["derive"] }
-anyhow = "*"
+clap = { version = "*", features = ["derive"] } # Used for the controller, to interpret user-entered commands
+anyhow = "*"                                    # Used for propogating errors up throughout the program
+serde = { version="*", features = ["derive"] }  # Used by the filesystem adapter to persist/summon data
+serde_json = "*"                                # Used by the filesystem adapter to persist/summon data
 
 [dev-dependencies]
 assert_cmd = "*"

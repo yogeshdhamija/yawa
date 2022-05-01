@@ -13,8 +13,3 @@ fn main() -> Result<()> {
     controllers::cli::start_program_with_args(&file_system_adapter)?;
     Ok(())
 }
-
-pub trait PersistanceAdapter {
-    fn persist(&self) -> Result<()>;
-    fn summon(&self) -> Result<bool>;
-}

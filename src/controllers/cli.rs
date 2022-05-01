@@ -1,4 +1,4 @@
-use crate::PersistanceAdapter;
+use crate::controllers::ports::PersistanceAdapter;
 use anyhow::{anyhow, Result};
 use clap::{Parser, Subcommand};
 
@@ -27,14 +27,14 @@ pub fn start_program_with_args(persistance_adapter: &impl PersistanceAdapter) ->
     let args = Args::parse();
     match &args.command {
         Commands::Status {} => {
-            if persistance_adapter.summon()? {
+            if let Some(reference_weight) = persistance_adapter.summon() {
+                println!("Current reference weight: {reference_weight}");
+            } else {
                 return Err(anyhow!("No status. Start a program first!"));
             }
         }
-        Commands::Start {
-            reference_weight: _,
-        } => {
-            persistance_adapter.persist()?;
+        Commands::Start { reference_weight } => {
+            persistance_adapter.persist(*reference_weight)?;
         }
     }
 

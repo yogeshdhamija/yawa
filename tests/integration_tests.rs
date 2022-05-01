@@ -25,8 +25,10 @@ fn starts_program() {
     run_and_assert("status")
         .failure()
         .stderr(contains("No status. Start a program first!"));
-    run_and_assert("start -r 100").success();
-    run_and_assert("status").success();
+    run_and_assert("start -r 105").success();
+    run_and_assert("status")
+        .success()
+        .stdout("Current reference weight: 105\n");
 }
 
 #[test]
