@@ -56,8 +56,13 @@ fn starting_program_needs_reference_weight() {
 
 fn prints_next_workout() {
     clean_slate();
+    run_and_assert("next show").failure().stderr(contains(
+        "Can't display next workout. Start a program first!",
+    ));
     run_and_assert("start -r 100");
-    run_and_assert("next show").success();
+    run_and_assert("next show")
+        .success()
+        .stdout(contains("100"));
 }
 
 // Helpers (tech debt-- make them run in parallel)

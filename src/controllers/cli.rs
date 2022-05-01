@@ -48,7 +48,17 @@ pub fn start_program_with_args(persistance_adapter: &impl PersistanceAdapter) ->
         Commands::Start { reference_weight } => {
             persistance_adapter.persist(*reference_weight)?;
         }
-        Commands::Next { command: _ } => {}
+        Commands::Next {
+            command: _next_subcommand,
+        } => {
+            if let Some(reference_weight) = persistance_adapter.summon() {
+                println!("Current reference weight: {reference_weight}");
+            } else {
+                return Err(anyhow!(
+                    "Can't display next workout. Start a program first!"
+                ));
+            }
+        }
     }
 
     Ok(())
