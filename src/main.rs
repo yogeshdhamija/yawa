@@ -7,6 +7,7 @@ use anyhow::Result;
 
 mod adapters;
 mod controllers;
+mod services;
 
 fn main() -> Result<()> {
     let file_system_adapter = adapters::filesystem::new();

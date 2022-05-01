@@ -1,4 +1,4 @@
-use crate::controllers::ports::PersistanceAdapter;
+use crate::services::ports::PersistanceAdapter;
 use anyhow::{anyhow, Result};
 use clap::{Parser, Subcommand};
 

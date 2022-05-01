@@ -1,4 +1,4 @@
-use crate::controllers::ports::PersistanceAdapter;
+use crate::services::ports::PersistanceAdapter;
 use anyhow::Result;
 use serde::{Deserialize, Serialize};
 use std::fs::create_dir_all;
