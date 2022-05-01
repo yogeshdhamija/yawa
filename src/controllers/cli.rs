@@ -1,5 +1,6 @@
 use crate::services::ports::PersistanceAdapter;
-use anyhow::{anyhow, Result};
+use crate::services::service;
+use anyhow::Result;
 use clap::{Parser, Subcommand};
 
 #[derive(Debug, Parser)]
@@ -39,11 +40,7 @@ pub fn start_program_with_args(persistance_adapter: &impl PersistanceAdapter) ->
     let args = Args::parse();
     match &args.command {
         Commands::Status {} => {
-            if let Some(reference_weight) = persistance_adapter.summon() {
-                println!("Current reference weight: {reference_weight}");
-            } else {
-                return Err(anyhow!("No status. Start a program first!"));
-            }
+            println!("{}", service::status(persistance_adapter)?);
         }
         Commands::Start { reference_weight } => {
             persistance_adapter.persist(*reference_weight)?;
@@ -51,13 +48,7 @@ pub fn start_program_with_args(persistance_adapter: &impl PersistanceAdapter) ->
         Commands::Next {
             command: _next_subcommand,
         } => {
-            if let Some(reference_weight) = persistance_adapter.summon() {
-                println!("Current reference weight: {reference_weight}");
-            } else {
-                return Err(anyhow!(
-                    "Can't display next workout. Start a program first!"
-                ));
-            }
+            println!("{}", service::next_show(persistance_adapter)?);
         }
     }
 
