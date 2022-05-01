@@ -9,6 +9,8 @@ mod adapters;
 mod controllers;
 mod services;
 
+mod program;
+
 fn main() -> Result<()> {
     let file_system_adapter = adapters::filesystem::new();
     controllers::cli::start_program_with_args(&file_system_adapter)?;
