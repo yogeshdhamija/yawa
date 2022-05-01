@@ -43,7 +43,7 @@ pub fn start_program_with_args(persistance_adapter: &impl PersistanceAdapter) ->
             println!("{}", service::status(persistance_adapter)?);
         }
         Commands::Start { reference_weight } => {
-            persistance_adapter.persist(*reference_weight)?;
+            service::new_program(persistance_adapter, *reference_weight)?;
         }
         Commands::Next {
             command: _next_subcommand,

@@ -13,6 +13,14 @@ pub fn next_show(persistance_adapter: &impl PersistanceAdapter) -> Result<String
     })
 }
 
+pub fn new_program(
+    persistance_adapter: &impl PersistanceAdapter,
+    reference_weight: u64,
+) -> Result<()> {
+    persistance_adapter.persist(reference_weight)?;
+    Ok(())
+}
+
 fn with_program<F, R>(persistance_adapter: &impl PersistanceAdapter, closure: F) -> Result<R>
 where
     F: FnOnce(u64) -> R,
