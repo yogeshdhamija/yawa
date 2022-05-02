@@ -121,30 +121,25 @@ impl Lift {
             weight,
         })
     }
-}
 
-mod private {
-    use super::*;
-    impl Lift {
-        /// notation is like '2x3,1x3+'
-        pub(super) fn parse_sets(notation: &str) -> Result<Vec<Set>> {
-            let error = "Cannot parse sets notation";
-            let mut vec = Vec::new();
-            notation
-                .split(',')
-                .try_for_each(|sets_n_reps| -> Result<()> {
-                    // sets_n_reps looks like '2x3+'
-                    let mut split = sets_n_reps.split('x');
-                    let times: i64 = split.next().ok_or(anyhow!(error))?.parse()?;
-                    let reps = split.next().ok_or(anyhow!(error))?;
-                    for _ in 0..times {
-                        let b = Set::parse(reps)?;
-                        vec.push(b);
-                    }
-                    Ok(())
-                })?;
-            Ok(vec)
-        }
+    /// notation is like '2x3,1x3+'
+    fn parse_sets(notation: &str) -> Result<Vec<Set>> {
+        let error = "Cannot parse sets notation";
+        let mut vec = Vec::new();
+        notation
+            .split(',')
+            .try_for_each(|sets_n_reps| -> Result<()> {
+                // sets_n_reps looks like '2x3+'
+                let mut split = sets_n_reps.split('x');
+                let times: i64 = split.next().ok_or(anyhow!(error))?.parse()?;
+                let reps = split.next().ok_or(anyhow!(error))?;
+                for _ in 0..times {
+                    let b = Set::parse(reps)?;
+                    vec.push(b);
+                }
+                Ok(())
+            })?;
+        Ok(vec)
     }
 }
 
@@ -160,7 +155,7 @@ pub struct Program {
 }
 
 impl Program {
-    fn gzcl_4day() -> Self {
+    pub fn gzcl_4day() -> Self {
         Program {
             days: vec![
                 Day {
