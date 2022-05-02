@@ -1,4 +1,4 @@
-use crate::services::ports::PersistanceAdapter;
+use crate::services::ports::PersistenceAdapter;
 use anyhow::Result;
 use serde::{Deserialize, Serialize};
 use std::fs::create_dir_all;
@@ -17,7 +17,7 @@ struct Saveable {
     reference_weight: u64,
 }
 
-impl PersistanceAdapter for FileSystem {
+impl PersistenceAdapter for FileSystem {
     fn persist(&self, reference_weight: u64) -> Result<()> {
         create_dir_all("/tmp/yawa")?;
         let mut file = File::create("/tmp/yawa/saved.json")?;

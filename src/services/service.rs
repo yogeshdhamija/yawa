@@ -1,33 +1,33 @@
-use crate::services::ports::PersistanceAdapter;
+use crate::services::ports::PersistenceAdapter;
 use anyhow::{anyhow, Result};
 
-pub fn status(persistance_adapter: &impl PersistanceAdapter) -> Result<String> {
-    with_program(persistance_adapter, |r| {
+pub fn status(persistence_adapter: &impl PersistenceAdapter) -> Result<String> {
+    with_program(persistence_adapter, |r| {
         format!("Current reference weight: {r}")
     })
 }
 
-pub fn next_show(persistance_adapter: &impl PersistanceAdapter) -> Result<String> {
-    with_program(persistance_adapter, |r| {
+pub fn next_show(persistence_adapter: &impl PersistenceAdapter) -> Result<String> {
+    with_program(persistence_adapter, |r| {
         format!("Current reference weight: {r}")
     })
 }
 
 pub fn new_program(
-    persistance_adapter: &impl PersistanceAdapter,
+    persistence_adapter: &impl PersistenceAdapter,
     reference_weight: u64,
 ) -> Result<()> {
-    persistance_adapter.persist(reference_weight)?;
+    persistence_adapter.persist(reference_weight)?;
     Ok(())
 }
 
-fn with_program<F, R>(persistance_adapter: &impl PersistanceAdapter, closure: F) -> Result<R>
+fn with_program<F, R>(persistence_adapter: &impl PersistenceAdapter, closure: F) -> Result<R>
 where
     F: FnOnce(u64) -> R,
 {
-    if let Some(reference_weight) = persistance_adapter.summon() {
-        return Ok(closure(reference_weight));
+    return if let Some(reference_weight) = persistence_adapter.summon() {
+        Ok(closure(reference_weight))
     } else {
-        return Err(anyhow!("Start a program first!"));
-    }
+        Err(anyhow!("Start a program first!"))
+    };
 }

@@ -1,4 +1,4 @@
-use crate::services::ports::PersistanceAdapter;
+use crate::services::ports::PersistenceAdapter;
 use crate::services::service;
 use anyhow::Result;
 use clap::{Parser, Subcommand};
@@ -36,19 +36,19 @@ enum NextCommands {
     Show {},
 }
 
-pub fn start_program_with_args(persistance_adapter: &impl PersistanceAdapter) -> Result<()> {
+pub fn start_program_with_args(persistence_adapter: &impl PersistenceAdapter) -> Result<()> {
     let args = Args::parse();
     match &args.command {
         Commands::Status {} => {
-            println!("{}", service::status(persistance_adapter)?);
+            println!("{}", service::status(persistence_adapter)?);
         }
         Commands::Start { reference_weight } => {
-            service::new_program(persistance_adapter, *reference_weight)?;
+            service::new_program(persistence_adapter, *reference_weight)?;
         }
         Commands::Next {
             command: _next_subcommand,
         } => {
-            println!("{}", service::next_show(persistance_adapter)?);
+            println!("{}", service::next_show(persistence_adapter)?);
         }
     }
 
