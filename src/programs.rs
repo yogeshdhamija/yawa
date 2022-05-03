@@ -1,10 +1,12 @@
 use crate::lifting::*;
+use std::collections::HashMap;
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct Program {
     pub days: Vec<Day>,
     pub reference_weight: u64,
     pub name: String,
+    pub weights: HashMap<String, u64>,
 }
 
 impl Program {
@@ -16,9 +18,9 @@ impl Program {
                 lift: lift.clone(),
                 weight: match lift.weight {
                     WeightScheme::BasedOnReference { .. } => Some(self.reference_weight),
-                    WeightScheme::Any => Some(30),
+                    WeightScheme::Any => None,
                     WeightScheme::None => None,
-                    WeightScheme::LinearBasedOnPrevious { .. } => Some(30),
+                    WeightScheme::LinearBasedOnPrevious { .. } => None,
                 },
             })
             .collect()
@@ -29,6 +31,7 @@ pub fn start_gzcl_4day(reference_weight: u64) -> Program {
     Program {
         name: "GZCL-based 4-day cycle".to_string(),
         reference_weight,
+        weights: HashMap::new(),
         days: vec![
             Day {
                 name: "Pull".to_string(),
@@ -92,10 +95,10 @@ mod tests {
     }
 
     #[test]
-    fn all_non_reference_weights_initialized_at_30() {
+    fn all_non_reference_weights_initialized() {
         assert_eq!(
             format!("{}", start_gzcl_4day(100).next_workout()[3]),
-            "Face Pull -> 2x15,1x15-25 @ 30"
+            "Face Pull -> 2x15,1x15-25 @ any"
         );
     }
 }

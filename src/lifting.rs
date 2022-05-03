@@ -260,7 +260,11 @@ impl Display for LiftAttempt {
                 "{} -> {} @ {}",
                 self.lift.name,
                 format(&self.lift.sets),
-                self.weight.unwrap()
+                if self.weight.is_some() {
+                    self.weight.unwrap().to_string()
+                } else {
+                    "any".to_string()
+                }
             ),
         }
     }
@@ -365,6 +369,16 @@ mod tests {
                 "{}",
                 LiftAttempt {
                     lift: Lift::parse("Pullups -> 3x5 @ any").unwrap(),
+                    weight: None,
+                }
+            ),
+            "Pullups -> 3x5 @ any"
+        );
+        assert_eq!(
+            format!(
+                "{}",
+                LiftAttempt {
+                    lift: Lift::parse("Pullups -> 3x5 @ add10").unwrap(),
                     weight: None,
                 }
             ),

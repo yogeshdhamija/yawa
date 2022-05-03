@@ -6,6 +6,7 @@ use serde::Deserialize;
 use serde::Serialize;
 use serde_json::from_str;
 use serde_json::to_string_pretty;
+use std::collections::HashMap;
 use std::fmt::{Display, Formatter};
 use std::fs::create_dir_all;
 use std::fs::File;
@@ -23,6 +24,7 @@ struct State {
     name: String,
     reference_weight: u64,
     days_in_notation: Vec<String>,
+    weights: HashMap<String, u64>,
 }
 
 impl Program {
@@ -35,6 +37,7 @@ impl Program {
             .try_for_each(|it| anyhow::Ok(days.push(Day::parse(it)?)))?;
         Ok(Program {
             days,
+            weights: state.weights,
             reference_weight: state.reference_weight,
             name: state.name,
         })
@@ -49,7 +52,8 @@ impl Display for Program {
             to_string_pretty(&State {
                 name: self.name.clone(),
                 reference_weight: self.reference_weight,
-                days_in_notation: self.days.iter().map(|it| format!("{it}")).collect()
+                days_in_notation: self.days.iter().map(|it| format!("{it}")).collect(),
+                weights: self.weights.clone()
             })
             .unwrap()
         )
