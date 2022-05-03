@@ -1,3 +1,4 @@
+use crate::program;
 use crate::services::ports::PersistenceAdapter;
 use anyhow::{anyhow, Result};
 
@@ -7,9 +8,9 @@ pub fn status(persistence_adapter: &impl PersistenceAdapter) -> Result<String> {
     })
 }
 
-pub fn next_show(persistence_adapter: &impl PersistenceAdapter) -> Result<String> {
-    with_program(persistence_adapter, |r| {
-        format!("Current reference weight: {r}")
+pub fn next_show(persistence_adapter: &impl PersistenceAdapter) -> Result<program::Day> {
+    with_program(persistence_adapter, |_r| {
+        program::Program::gzcl_4day().days.first().unwrap().clone()
     })
 }
 

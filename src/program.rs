@@ -2,7 +2,7 @@ use anyhow::{anyhow, Result};
 use std::fmt::{Display, Formatter};
 use std::time::Duration;
 
-#[derive(Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq)]
 pub enum WeightScheme {
     BasedOnReference { multiplier: f64, offset: i64 },
     Any,
@@ -60,7 +60,7 @@ impl WeightScheme {
     }
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq)]
 pub enum Set {
     Amrap {
         minimum_reps: u64,
@@ -129,7 +129,7 @@ impl Set {
     }
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct Lift {
     name: String,
     sets: Vec<Set>,
@@ -206,15 +206,15 @@ impl Lift {
     }
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct Day {
-    name: String,
-    lifts: Vec<Lift>,
+    pub name: String,
+    pub lifts: Vec<Lift>,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct Program {
-    days: Vec<Day>,
+    pub days: Vec<Day>,
 }
 
 impl Program {

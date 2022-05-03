@@ -62,7 +62,7 @@ fn prints_next_workout() {
     run_and_assert("start -r 100");
     run_and_assert("next show")
         .success()
-        .stdout(contains("100"));
+        .stdout(contains("Pullup"));
 }
 
 // Helpers (tech debt-- make them run in parallel)

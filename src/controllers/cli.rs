@@ -48,7 +48,15 @@ pub fn start_program_with_args(persistence_adapter: &impl PersistenceAdapter) ->
         Commands::Next {
             command: _next_subcommand,
         } => {
-            println!("{}", service::next_show(persistence_adapter)?);
+            let day = service::next_show(persistence_adapter)?;
+            let lifts = day
+                .lifts
+                .iter()
+                .map(|lift| format!("{lift}"))
+                .collect::<Vec<String>>()
+                .join("\n");
+            let string = format!("{}\n\n{}", day.name, lifts);
+            println!("{}", string);
         }
     }
 
