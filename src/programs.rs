@@ -7,6 +7,24 @@ pub struct Program {
     pub name: String,
 }
 
+impl Program {
+    pub fn next_workout(&self) -> Vec<LiftAttempt> {
+        let day = self.days.first().unwrap();
+        day.lifts
+            .iter()
+            .map(|lift| LiftAttempt {
+                lift: lift.clone(),
+                weight: match lift.weight {
+                    WeightScheme::BasedOnReference { .. } => Some(self.reference_weight),
+                    WeightScheme::Any => Some(30),
+                    WeightScheme::None => None,
+                    WeightScheme::LinearBasedOnPrevious { .. } => Some(30),
+                },
+            })
+            .collect()
+    }
+}
+
 pub fn start_gzcl_4day(reference_weight: u64) -> Program {
     Program {
         name: "GZCL-based 4-day cycle".to_string(),
@@ -57,24 +75,6 @@ pub fn start_gzcl_4day(reference_weight: u64) -> Program {
     }
 }
 
-impl Program {
-    pub fn next_workout(&self) -> Vec<LiftAttempt> {
-        let day = self.days.first().unwrap();
-        day.lifts
-            .iter()
-            .map(|lift| LiftAttempt {
-                lift: lift.clone(),
-                weight: match lift.weight {
-                    WeightScheme::BasedOnReference { .. } => Some(self.reference_weight),
-                    WeightScheme::Any => Some(30),
-                    WeightScheme::None => None,
-                    WeightScheme::LinearBasedOnPrevious { .. } => Some(30),
-                },
-            })
-            .collect()
-    }
-}
-
 #[cfg(test)]
 mod tests {
     use crate::programs::*;
@@ -92,7 +92,7 @@ mod tests {
     }
 
     #[test]
-    fn all_non_reference_weights_initialized_at_certain_value() {
+    fn all_non_reference_weights_initialized_at_30() {
         assert_eq!(
             format!("{}", start_gzcl_4day(100).next_workout()[3]),
             "Face Pull -> 2x15,1x15-25 @ 30"
