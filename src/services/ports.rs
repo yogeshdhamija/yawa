@@ -1,7 +1,7 @@
-use crate::programs::Gzcl4Day;
+use crate::programs::Program;
 use anyhow::Result;
 
 pub trait PersistenceAdapter {
-    fn persist(&self, program: &Gzcl4Day) -> Result<()>;
-    fn summon(&self) -> Result<Gzcl4Day>;
+    fn persist(&self, program: &Program) -> Result<()>;
+    fn summon(&self) -> Result<Program>;
 }

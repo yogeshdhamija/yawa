@@ -1,82 +1,79 @@
 use crate::lifting::*;
-use anyhow::Result;
+use anyhow::{anyhow, Result};
 use std::fmt::{Display, Formatter};
 
-#[derive(Clone, Debug)]
-pub struct Gzcl4Day {
+#[derive(Clone, Debug, PartialEq)]
+pub struct Program {
     pub days: Vec<Day>,
     pub reference_weight: u64,
+    pub name: String,
 }
 
-impl Gzcl4Day {
-    pub fn start(reference_weight: u64) -> Self {
-        Gzcl4Day {
-            reference_weight,
-            days: vec![
-                Day {
-                    name: "Pull".to_string(),
-                    lifts: vec![
-                        Lift::parse("Weighted Pullup -> 4x3,1x3+ @ 0.5r-30").unwrap(),
-                        Lift::parse("Pullup -> 3x7+").unwrap(),
-                        Lift::parse("Barbell Row -> 3x10 @ 0.65r").unwrap(),
-                        Lift::parse("Face Pull -> 2x15,1x15-25 @ add20").unwrap(),
-                        Lift::parse("Cable Curl -> 2x15,1x15-25 @ add20").unwrap(),
-                    ],
-                },
-                Day {
-                    name: "Push".to_string(),
-                    lifts: vec![
-                        Lift::parse("Bench press -> 4x3,1x3+ @ 1r").unwrap(),
-                        Lift::parse("Overhead press -> 3x10 @ 0.5r").unwrap(),
-                        Lift::parse("Incline bench press -> 3x10 @ 0.6r").unwrap(),
-                        Lift::parse("Pushup -> 3x15+").unwrap(),
-                        Lift::parse("Tricep Cable Pressdown -> 2x15,1x15-25 @ add20").unwrap(),
-                    ],
-                },
-                Day {
-                    name: "Legs".to_string(),
-                    lifts: vec![
-                        Lift::parse("Squat -> 4x3,1x3+ @ 1.35r").unwrap(),
-                        Lift::parse("Deadlift -> 3x8 @ 1.25r").unwrap(),
-                        Lift::parse("Romanian Deadlift -> 3x10 @ 0.675r").unwrap(),
-                        Lift::parse("Leg press -> 2x15,1x15-25 @ add30").unwrap(),
-                        Lift::parse("Standing dumbbell calf raise -> 2x15,1x15-25 @ add20")
-                            .unwrap(),
-                    ],
-                },
-                Day {
-                    name: "Core".to_string(),
-                    lifts: vec![
-                        Lift::parse("Plank -> 1x30s @ any").unwrap(),
-                        Lift::parse("Ab Rollout -> 3xAny").unwrap(),
-                        Lift::parse("Cable Core Press -> 3xAny @ any").unwrap(),
-                        Lift::parse("Bent-knee reverse hyperextension -> 3xAny @ any").unwrap(),
-                        Lift::parse("Knee raises -> 3xAny").unwrap(),
-                        Lift::parse("Leg extensions -> 3xAny @ any").unwrap(),
-                    ],
-                },
-            ],
-        }
+pub fn start_gzcl_4day(reference_weight: u64) -> Program {
+    Program {
+        name: "GZCL-based 4-day cycle".to_string(),
+        reference_weight,
+        days: vec![
+            Day {
+                name: "Pull".to_string(),
+                lifts: vec![
+                    Lift::parse("Weighted Pullup -> 4x3,1x3+ @ 0.5r-30").unwrap(),
+                    Lift::parse("Pullup -> 3x7+").unwrap(),
+                    Lift::parse("Barbell Row -> 3x10 @ 0.65r").unwrap(),
+                    Lift::parse("Face Pull -> 2x15,1x15-25 @ add20").unwrap(),
+                    Lift::parse("Cable Curl -> 2x15,1x15-25 @ add20").unwrap(),
+                ],
+            },
+            Day {
+                name: "Push".to_string(),
+                lifts: vec![
+                    Lift::parse("Bench press -> 4x3,1x3+ @ 1r").unwrap(),
+                    Lift::parse("Overhead press -> 3x10 @ 0.5r").unwrap(),
+                    Lift::parse("Incline bench press -> 3x10 @ 0.6r").unwrap(),
+                    Lift::parse("Pushup -> 3x15+").unwrap(),
+                    Lift::parse("Tricep Cable Pressdown -> 2x15,1x15-25 @ add20").unwrap(),
+                ],
+            },
+            Day {
+                name: "Legs".to_string(),
+                lifts: vec![
+                    Lift::parse("Squat -> 4x3,1x3+ @ 1.35r").unwrap(),
+                    Lift::parse("Deadlift -> 3x8 @ 1.25r").unwrap(),
+                    Lift::parse("Romanian Deadlift -> 3x10 @ 0.675r").unwrap(),
+                    Lift::parse("Leg press -> 2x15,1x15-25 @ add30").unwrap(),
+                    Lift::parse("Standing dumbbell calf raise -> 2x15,1x15-25 @ add20").unwrap(),
+                ],
+            },
+            Day {
+                name: "Core".to_string(),
+                lifts: vec![
+                    Lift::parse("Plank -> 1x30s @ any").unwrap(),
+                    Lift::parse("Ab Rollout -> 3xAny").unwrap(),
+                    Lift::parse("Cable Core Press -> 3xAny @ any").unwrap(),
+                    Lift::parse("Bent-knee reverse hyperextension -> 3xAny @ any").unwrap(),
+                    Lift::parse("Knee raises -> 3xAny").unwrap(),
+                    Lift::parse("Leg extensions -> 3xAny @ any").unwrap(),
+                ],
+            },
+        ],
     }
 }
 
-impl Display for Gzcl4Day {
+impl Display for Program {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}", self.reference_weight)
+        write!(f, "{}: {}", self.name, self.reference_weight)
     }
 }
 
-impl Gzcl4Day {
+impl Program {
     pub fn parse(notation: &str) -> Result<Self> {
-        Ok(Gzcl4Day::start(notation.parse::<u64>()?))
-    }
-
-    pub fn name(&self) -> String {
-        "GZCL-based 4-day cycle".to_string()
-    }
-
-    pub fn days(&self) -> &Vec<Day> {
-        &self.days
+        let r = notation
+            .split(":")
+            .skip(1)
+            .next()
+            .ok_or(anyhow!("Failed to parse"))?
+            .trim();
+        Ok(start_gzcl_4day(r.parse::<u64>()?))
     }
 
     pub fn next_workout(&self) -> Vec<LiftAttempt> {
@@ -100,18 +97,28 @@ mod tests {
     use crate::programs::*;
 
     #[test]
+    fn can_parse_program() {
+        assert_eq!(
+            start_gzcl_4day(100),
+            Program::parse("GZCL-based 4-day cycle: 100").unwrap()
+        );
+    }
+    #[test]
     fn can_create_program() {
-        Gzcl4Day::start(100);
+        assert_eq!(
+            format!("{}", start_gzcl_4day(100)),
+            "GZCL-based 4-day cycle: 100"
+        );
     }
 
     #[test]
     fn stores_weights() {
         assert_eq!(
-            format!("{}", Gzcl4Day::start(100).next_workout()[0]),
+            format!("{}", start_gzcl_4day(100).next_workout()[0]),
             "Weighted Pullup -> 4x3,1x3+ @ 20"
         );
         assert_eq!(
-            format!("{}", Gzcl4Day::start(100).next_workout()[1]),
+            format!("{}", start_gzcl_4day(100).next_workout()[1]),
             "Pullup -> 3x7+"
         );
     }
@@ -119,7 +126,7 @@ mod tests {
     #[test]
     fn all_non_reference_weights_initialized_at_certain_value() {
         assert_eq!(
-            format!("{}", Gzcl4Day::start(100).next_workout()[3]),
+            format!("{}", start_gzcl_4day(100).next_workout()[3]),
             "Face Pull -> 2x15,1x15-25 @ 30"
         );
     }

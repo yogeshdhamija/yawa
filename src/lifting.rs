@@ -270,7 +270,7 @@ impl Display for LiftAttempt {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct Day {
     pub name: String,
     pub lifts: Vec<Lift>,

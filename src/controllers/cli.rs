@@ -34,13 +34,12 @@ pub fn start_program_with_args(persistence_adapter: &impl PersistenceAdapter) ->
             let program = service::status(persistence_adapter)?;
             println!(
                 "Current program: {}\nCurrent reference weight: {}",
-                program.name(),
-                program.reference_weight
+                program.name, program.reference_weight
             );
         }
         Commands::Start { reference_weight } => {
             let program = service::new_program(persistence_adapter, *reference_weight)?;
-            println!("Started program: {}", program.name());
+            println!("Started program: {}", program.name);
         }
         Commands::Next {} => {
             let res = service::next_show(persistence_adapter)?;

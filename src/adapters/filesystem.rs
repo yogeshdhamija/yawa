@@ -1,4 +1,4 @@
-use crate::programs::Gzcl4Day;
+use crate::programs::Program;
 use crate::services::ports::PersistenceAdapter;
 use anyhow::Result;
 use serde::{Deserialize, Serialize};
@@ -19,7 +19,7 @@ struct Saveable {
 }
 
 impl PersistenceAdapter for FileSystem {
-    fn persist(&self, program: &Gzcl4Day) -> Result<()> {
+    fn persist(&self, program: &Program) -> Result<()> {
         create_dir_all("/tmp/yawa")?;
         let mut file = File::create("/tmp/yawa/saved.json")?;
         let program_string = format!("{program}");
@@ -29,10 +29,10 @@ impl PersistenceAdapter for FileSystem {
         write!(file, "{json}")?;
         Ok(())
     }
-    fn summon(&self) -> Result<Gzcl4Day> {
+    fn summon(&self) -> Result<Program> {
         let file = File::open("/tmp/yawa/saved.json")?;
         let reader = BufReader::new(file);
         let saved: Saveable = serde_json::from_reader(reader)?;
-        Ok(Gzcl4Day::parse(&saved.program)?)
+        Ok(Program::parse(&saved.program)?)
     }
 }
