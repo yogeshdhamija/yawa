@@ -39,7 +39,7 @@ impl WeightScheme {
     /// parse("3.14r-12")
     /// parse("add10")
     /// ```
-    fn parse(notation: &str) -> Result<Self> {
+    pub fn parse(notation: &str) -> Result<Self> {
         let error = "Invalid notation";
         return if notation == "any" {
             Ok(WeightScheme::Any)
@@ -102,7 +102,7 @@ impl Set {
     /// parse("10")
     /// parse("5s")
     /// ```
-    fn parse(notation: &str) -> Result<Self> {
+    pub fn parse(notation: &str) -> Result<Self> {
         let error = "Invalid notation";
         return if notation == "Any" {
             Ok(Set::Any)
@@ -168,7 +168,7 @@ impl Display for Lift {
 }
 
 impl Lift {
-    fn parse(notation: &str) -> Result<Self> {
+    pub fn parse(notation: &str) -> Result<Self> {
         let error = "Cannot parse notation";
         let name = notation.split("->").next().ok_or(anyhow!(error))?.trim();
         let rest = notation.split("->").skip(1).next().ok_or(anyhow!(error))?;
@@ -306,6 +306,13 @@ mod tests {
         assert_eq!(
             format!("{}", Lift::parse("Pullups -> 2x5,1x5-7,1x5+").unwrap()),
             "Pullups -> 2x5,1x5-7,1x5+"
+        );
+        assert_eq!(
+            format!(
+                "{}",
+                Lift::parse("Some really long name -> 3xAny,2x5,1x5-7,1x5+ @ any").unwrap()
+            ),
+            "Some really long name -> 3xAny,2x5,1x5-7,1x5+ @ any"
         );
         assert_eq!(
             format!(
