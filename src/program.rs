@@ -176,6 +176,17 @@ impl Display for Lift {
 }
 
 impl Lift {
+    /// notation options:
+    /// ```
+    /// parse("name -> 3xReps,1xReps @ weight")
+    /// ```
+    /// See Set::parse() and WeightScheme::parse() to
+    /// see how the `Reps` and `weight` portion above
+    /// should be structured.  
+    /// Example:
+    /// ```
+    /// parse("Barbell bench press -> 3x5,1x5-6,1x6+ @ 0.8r-10")
+    /// ```
     pub fn parse(notation: &str) -> Result<Self> {
         let error = "Cannot parse notation";
         let name = notation.split("->").next().ok_or(anyhow!(error))?.trim();
@@ -222,19 +233,31 @@ impl Lift {
 #[derive(Clone, Debug, PartialEq)]
 pub struct LiftAttempt {
     lift: Lift,
-    weight: Option<i64>,
+    weight: Option<u64>,
 }
 
 impl Display for LiftAttempt {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        match self.weight {
-            None => write!(f, "{} -> {}", self.lift.name, format(&self.lift.sets)),
-            Some(num) => write!(
+        match self.lift.weight {
+            WeightScheme::None => {
+                write!(f, "{} -> {}", self.lift.name, format(&self.lift.sets))
+            }
+            WeightScheme::BasedOnReference { multiplier, offset } => {
+                let res = (multiplier * (self.weight.unwrap() as f64)) + (offset as f64);
+                write!(
+                    f,
+                    "{} -> {} @ {}",
+                    self.lift.name,
+                    format(&self.lift.sets),
+                    res
+                )
+            }
+            _ => write!(
                 f,
                 "{} -> {} @ {}",
                 self.lift.name,
                 format(&self.lift.sets),
-                num
+                self.weight.unwrap()
             ),
         }
     }
@@ -329,6 +352,16 @@ mod tests {
                 }
             ),
             "Pullups -> 3x5"
+        );
+        assert_eq!(
+            format!(
+                "{}",
+                LiftAttempt {
+                    lift: Lift::parse("Pullups -> 3x5 @ 0.5r+10").unwrap(),
+                    weight: Some(100),
+                }
+            ),
+            "Pullups -> 3x5 @ 60"
         );
         assert_eq!(
             format!(
