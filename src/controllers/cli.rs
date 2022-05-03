@@ -23,17 +23,8 @@ enum Commands {
     /// Display current status of your lifting lifting.
     Status {},
 
-    /// About your next workout.
-    Next {
-        #[clap(subcommand)]
-        command: NextCommands,
-    },
-}
-
-#[derive(Debug, Subcommand)]
-enum NextCommands {
-    /// Show the next workout you need to do
-    Show {},
+    /// Show the next workout in your program.
+    Next {},
 }
 
 pub fn start_program_with_args(persistence_adapter: &impl PersistenceAdapter) -> Result<()> {
@@ -45,9 +36,7 @@ pub fn start_program_with_args(persistence_adapter: &impl PersistenceAdapter) ->
         Commands::Start { reference_weight } => {
             service::new_program(persistence_adapter, *reference_weight)?;
         }
-        Commands::Next {
-            command: _next_subcommand,
-        } => {
+        Commands::Next {} => {
             let res = service::next_show(persistence_adapter)?;
             let lifts = res
                 .1

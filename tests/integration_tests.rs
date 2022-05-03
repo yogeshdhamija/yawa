@@ -56,11 +56,11 @@ fn starting_program_needs_reference_weight() {
 
 fn prints_next_workout() {
     clean_slate();
-    run_and_assert("next show")
+    run_and_assert("next")
         .failure()
         .stderr(contains("Start a lifting first!"));
     run_and_assert("start -r 100");
-    run_and_assert("next show")
+    run_and_assert("next")
         .success()
         .stdout(contains("Weighted Pullup -> 4x3,1x3+ @ 20"));
 }
