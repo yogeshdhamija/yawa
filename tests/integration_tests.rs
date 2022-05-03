@@ -41,7 +41,7 @@ fn starts_program() {
     clean_slate();
     run_and_assert("status")
         .failure()
-        .stderr(contains("Start a program first!"));
+        .stderr(contains("Start a lifting first!"));
     run_and_assert("start -r 105").success();
     run_and_assert("status")
         .success()
@@ -58,7 +58,7 @@ fn prints_next_workout() {
     clean_slate();
     run_and_assert("next show")
         .failure()
-        .stderr(contains("Start a program first!"));
+        .stderr(contains("Start a lifting first!"));
     run_and_assert("start -r 100");
     run_and_assert("next show")
         .success()

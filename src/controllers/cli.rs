@@ -20,7 +20,7 @@ enum Commands {
         reference_weight: u64,
     },
 
-    /// Display current status of your lifting program.
+    /// Display current status of your lifting lifting.
     Status {},
 
     /// About your next workout.

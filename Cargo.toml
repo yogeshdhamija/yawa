@@ -7,7 +7,7 @@ description = "YAWA: Yet Another Workout App keeps track of your lifts and weigh
 
 [dependencies]
 clap = { version = "*", features = ["derive"] } # Used for the controller, to interpret user-entered commands
-anyhow = "*"                                    # Used for propogating errors up throughout the program
+anyhow = "*"                                    # Used for propogating errors up throughout the lifting
 serde = { version="*", features = ["derive"] }  # Used by the filesystem adapter to persist/summon data
 serde_json = "*"                                # Used by the filesystem adapter to persist/summon data
 

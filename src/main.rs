@@ -9,7 +9,8 @@ mod adapters;
 mod controllers;
 mod services;
 
-mod program;
+mod lifting;
+mod programs;
 
 fn main() -> Result<()> {
     let file_system_adapter = adapters::filesystem::new();
