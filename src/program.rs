@@ -1,4 +1,5 @@
 use anyhow::{anyhow, Result};
+use std::fmt::{Display, Formatter};
 use std::time::Duration;
 
 #[derive(Debug, PartialEq)]
@@ -54,6 +55,21 @@ pub enum Set {
     Time {
         duration: Duration,
     },
+}
+
+impl Display for Set {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        return match self {
+            Set::Amrap { minimum_reps } => write!(f, "{minimum_reps}+"),
+            Set::Range {
+                maximum_reps,
+                minimum_reps,
+            } => write!(f, "{minimum_reps}-{maximum_reps}"),
+            Set::Any => write!(f, "Any"),
+            Set::Defined { reps } => write!(f, "{reps}"),
+            Set::Time { duration } => write!(f, "{}s", duration.as_secs()),
+        };
+    }
 }
 
 impl Set {
@@ -252,6 +268,15 @@ mod tests {
                 duration: Duration::new(2, 0)
             }
         );
+    }
+
+    #[test]
+    fn can_print_rep_schemes() {
+        assert_eq!(format!("{}", Set::parse("2-3").unwrap()), "2-3");
+        assert_eq!(format!("{}", Set::parse("3+").unwrap()), "3+");
+        assert_eq!(format!("{}", Set::parse("3").unwrap()), "3");
+        assert_eq!(format!("{}", Set::parse("Any").unwrap()), "Any");
+        assert_eq!(format!("{}", Set::parse("2s").unwrap()), "2s");
     }
 
     #[test]
