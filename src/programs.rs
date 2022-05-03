@@ -67,6 +67,7 @@ pub fn start_gzcl_4day(reference_weight: u64) -> Program {
 struct State {
     name: String,
     reference_weight: u64,
+    days_in_notation: Vec<String>,
 }
 
 impl Display for Program {
@@ -76,7 +77,8 @@ impl Display for Program {
             "{}",
             to_string_pretty(&State {
                 name: self.name.clone(),
-                reference_weight: self.reference_weight
+                reference_weight: self.reference_weight,
+                days_in_notation: self.days.iter().map(|it| format!("{it}")).collect()
             })
             .unwrap()
         )
@@ -86,7 +88,16 @@ impl Display for Program {
 impl Program {
     pub fn parse(notation: &str) -> Result<Self> {
         let state: State = from_str(notation)?;
-        Ok(start_gzcl_4day(state.reference_weight))
+        let mut days = Vec::new();
+        state
+            .days_in_notation
+            .iter()
+            .try_for_each(|it| anyhow::Ok(days.push(Day::parse(it)?)))?;
+        Ok(Program {
+            days,
+            reference_weight: state.reference_weight,
+            name: state.name,
+        })
     }
 
     pub fn next_workout(&self) -> Vec<LiftAttempt> {
