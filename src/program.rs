@@ -222,18 +222,21 @@ impl Lift {
 #[derive(Clone, Debug, PartialEq)]
 pub struct LiftAttempt {
     lift: Lift,
-    weight: i64,
+    weight: Option<i64>,
 }
 
 impl Display for LiftAttempt {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        write!(
-            f,
-            "{} -> {} @ {}",
-            self.lift.name,
-            format(&self.lift.sets),
-            self.weight
-        )
+        match self.weight {
+            None => write!(f, "{} -> {}", self.lift.name, format(&self.lift.sets)),
+            Some(num) => write!(
+                f,
+                "{} -> {} @ {}",
+                self.lift.name,
+                format(&self.lift.sets),
+                num
+            ),
+        }
     }
 }
 
@@ -317,11 +320,26 @@ mod tests {
 
     #[test]
     fn can_make_lift_attempt() {
-        let attempt = LiftAttempt {
-            lift: Lift::parse("Pullups -> 3x5 @ add10").unwrap(),
-            weight: 25,
-        };
-        assert_eq!(format!("{attempt}"), "Pullups -> 3x5 @ 25")
+        assert_eq!(
+            format!(
+                "{}",
+                LiftAttempt {
+                    lift: Lift::parse("Pullups -> 3x5").unwrap(),
+                    weight: None
+                }
+            ),
+            "Pullups -> 3x5"
+        );
+        assert_eq!(
+            format!(
+                "{}",
+                LiftAttempt {
+                    lift: Lift::parse("Pullups -> 3x5 @ add10").unwrap(),
+                    weight: Some(25),
+                }
+            ),
+            "Pullups -> 3x5 @ 25"
+        );
     }
 
     #[test]
