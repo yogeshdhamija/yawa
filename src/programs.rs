@@ -1,5 +1,9 @@
 use crate::lifting::*;
-use anyhow::{anyhow, Result};
+use anyhow::Result;
+use serde::Deserialize;
+use serde::Serialize;
+use serde_json::from_str;
+use serde_json::to_string_pretty;
 use std::fmt::{Display, Formatter};
 
 #[derive(Clone, Debug, PartialEq)]
@@ -59,21 +63,30 @@ pub fn start_gzcl_4day(reference_weight: u64) -> Program {
     }
 }
 
+#[derive(Serialize, Deserialize)]
+struct State {
+    name: String,
+    reference_weight: u64,
+}
+
 impl Display for Program {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}: {}", self.name, self.reference_weight)
+        write!(
+            f,
+            "{}",
+            to_string_pretty(&State {
+                name: self.name.clone(),
+                reference_weight: self.reference_weight
+            })
+            .unwrap()
+        )
     }
 }
 
 impl Program {
     pub fn parse(notation: &str) -> Result<Self> {
-        let r = notation
-            .split(":")
-            .skip(1)
-            .next()
-            .ok_or(anyhow!("Failed to parse"))?
-            .trim();
-        Ok(start_gzcl_4day(r.parse::<u64>()?))
+        let state: State = from_str(notation)?;
+        Ok(start_gzcl_4day(state.reference_weight))
     }
 
     pub fn next_workout(&self) -> Vec<LiftAttempt> {
@@ -97,18 +110,11 @@ mod tests {
     use crate::programs::*;
 
     #[test]
-    fn can_parse_program() {
-        assert_eq!(
-            start_gzcl_4day(100),
-            Program::parse("GZCL-based 4-day cycle: 100").unwrap()
-        );
-    }
-    #[test]
-    fn can_create_program() {
-        assert_eq!(
-            format!("{}", start_gzcl_4day(100)),
-            "GZCL-based 4-day cycle: 100"
-        );
+    fn can_create_and_save_program() {
+        let program = start_gzcl_4day(100);
+        let string = format!("{}", program);
+        let after_round_trip = Program::parse(&string).unwrap();
+        assert_eq!(after_round_trip, program);
     }
 
     #[test]
