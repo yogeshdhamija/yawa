@@ -10,6 +10,27 @@ pub enum WeightScheme {
     LinearBasedOnPrevious { amount_to_increase: u64 },
 }
 
+impl Display for WeightScheme {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        return match self {
+            WeightScheme::BasedOnReference { multiplier, offset } => {
+                if offset > &0 {
+                    write!(f, "{multiplier}r+{offset}")
+                } else if offset == &0 {
+                    write!(f, "{multiplier}r")
+                } else {
+                    write!(f, "{multiplier}r{offset}")
+                }
+            }
+            WeightScheme::Any => write!(f, "any"),
+            WeightScheme::None => write!(f, ""),
+            WeightScheme::LinearBasedOnPrevious { amount_to_increase } => {
+                write!(f, "add{amount_to_increase}")
+            }
+        };
+    }
+}
+
 impl WeightScheme {
     /// notation options:
     /// ```
@@ -271,7 +292,7 @@ mod tests {
     }
 
     #[test]
-    fn can_print_rep_schemes() {
+    fn can_display_rep_schemes() {
         assert_eq!(format!("{}", Set::parse("2-3").unwrap()), "2-3");
         assert_eq!(format!("{}", Set::parse("3+").unwrap()), "3+");
         assert_eq!(format!("{}", Set::parse("3").unwrap()), "3");
@@ -309,6 +330,27 @@ mod tests {
             WeightScheme::LinearBasedOnPrevious {
                 amount_to_increase: 20
             }
+        );
+    }
+
+    #[test]
+    fn can_display_weight_schemes() {
+        assert_eq!(
+            format!("{}", WeightScheme::parse("3.14r-12").unwrap()),
+            "3.14r-12"
+        );
+        assert_eq!(
+            format!("{}", WeightScheme::parse("3.14r+12").unwrap()),
+            "3.14r+12"
+        );
+        assert_eq!(
+            format!("{}", WeightScheme::parse("3.14r").unwrap()),
+            "3.14r"
+        );
+        assert_eq!(format!("{}", WeightScheme::parse("any").unwrap()), "any");
+        assert_eq!(
+            format!("{}", WeightScheme::parse("add20").unwrap()),
+            "add20"
         );
     }
 }
