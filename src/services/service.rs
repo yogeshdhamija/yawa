@@ -13,12 +13,16 @@ pub fn next_show(
     persistence_adapter: &impl PersistenceAdapter,
 ) -> Result<(String, Vec<LiftAttempt>)> {
     with_program(persistence_adapter, |r| {
-        let program = Gzcl4Day::start(r);
+        let program = start_program(r);
         (
             program.days().first().unwrap().name.clone(),
             program.next_workout(),
         )
     })
+}
+
+fn start_program(r: u64) -> impl Program {
+    Gzcl4Day::start(r)
 }
 
 pub fn new_program(
