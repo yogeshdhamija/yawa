@@ -62,7 +62,7 @@ fn prints_next_workout() {
     run_and_assert("start -r 100");
     run_and_assert("next show")
         .success()
-        .stdout(contains("Pullup"));
+        .stdout(contains("Weighted Pullup -> 4x3,1x3+ @ 20"));
 }
 
 // Helpers (tech debt-- make them run in parallel)

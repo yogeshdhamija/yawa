@@ -1,4 +1,5 @@
 use crate::program;
+use crate::program::LiftAttempt;
 use crate::services::ports::PersistenceAdapter;
 use anyhow::{anyhow, Result};
 
@@ -8,13 +9,15 @@ pub fn status(persistence_adapter: &impl PersistenceAdapter) -> Result<String> {
     })
 }
 
-pub fn next_show(persistence_adapter: &impl PersistenceAdapter) -> Result<program::Day> {
-    with_program(persistence_adapter, |_r| {
-        program::Program::gzcl_4day(12)
-            .days
-            .first()
-            .unwrap()
-            .clone()
+pub fn next_show(
+    persistence_adapter: &impl PersistenceAdapter,
+) -> Result<(String, Vec<LiftAttempt>)> {
+    with_program(persistence_adapter, |r| {
+        let program = program::Program::gzcl_4day(r);
+        (
+            program.days.first().unwrap().name.clone(),
+            program.next_workout(),
+        )
     })
 }
 
