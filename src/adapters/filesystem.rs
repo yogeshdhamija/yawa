@@ -1,6 +1,12 @@
+use crate::lifting::Day;
 use crate::programs::Program;
 use crate::services::ports::PersistenceAdapter;
 use anyhow::Result;
+use serde::Deserialize;
+use serde::Serialize;
+use serde_json::from_str;
+use serde_json::to_string_pretty;
+use std::fmt::{Display, Formatter};
 use std::fs::create_dir_all;
 use std::fs::File;
 use std::io::Read;
@@ -10,6 +16,44 @@ pub struct FileSystem {}
 
 pub fn new() -> FileSystem {
     FileSystem {}
+}
+
+#[derive(Serialize, Deserialize)]
+struct State {
+    name: String,
+    reference_weight: u64,
+    days_in_notation: Vec<String>,
+}
+
+impl Program {
+    fn parse(notation: &str) -> Result<Self> {
+        let state: State = from_str(notation)?;
+        let mut days = Vec::new();
+        state
+            .days_in_notation
+            .iter()
+            .try_for_each(|it| anyhow::Ok(days.push(Day::parse(it)?)))?;
+        Ok(Program {
+            days,
+            reference_weight: state.reference_weight,
+            name: state.name,
+        })
+    }
+}
+
+impl Display for Program {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        write!(
+            f,
+            "{}",
+            to_string_pretty(&State {
+                name: self.name.clone(),
+                reference_weight: self.reference_weight,
+                days_in_notation: self.days.iter().map(|it| format!("{it}")).collect()
+            })
+            .unwrap()
+        )
+    }
 }
 
 impl PersistenceAdapter for FileSystem {
@@ -25,5 +69,19 @@ impl PersistenceAdapter for FileSystem {
         let mut program_string = String::new();
         file.read_to_string(&mut program_string)?;
         Ok(Program::parse(&program_string)?)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::programs::start_gzcl_4day;
+
+    #[test]
+    fn can_create_and_save_program() {
+        let program = start_gzcl_4day(100);
+        let string = format!("{}", program);
+        let after_round_trip = Program::parse(&string).unwrap();
+        assert_eq!(after_round_trip, program);
     }
 }
