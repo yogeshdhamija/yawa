@@ -55,7 +55,7 @@ pub fn start_program_with_args(persistence_adapter: &impl PersistenceAdapter) ->
                 .map(|lift| format!("{lift}"))
                 .collect::<Vec<String>>()
                 .join("\n");
-            let string = format!("{}\n\n{}", day.name, lifts);
+            let string = format!("=== Day: {} ===\n{}", day.name, lifts);
             println!("{}", string);
         }
     }
