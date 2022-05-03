@@ -276,31 +276,20 @@ pub struct Day {
     pub lifts: Vec<Lift>,
 }
 
+pub trait Program {
+    fn days(&self) -> &Vec<Day>;
+    fn next_workout(&self) -> Vec<LiftAttempt>;
+}
+
 #[derive(Clone, Debug)]
-pub struct Program {
+pub struct Gzcl4Day {
     pub days: Vec<Day>,
     pub reference_weight: u64,
 }
 
-impl Program {
-    pub fn next_workout(&self) -> Vec<LiftAttempt> {
-        let day = self.days.first().unwrap();
-        day.lifts
-            .iter()
-            .map(|lift| LiftAttempt {
-                lift: lift.clone(),
-                weight: match lift.weight {
-                    WeightScheme::BasedOnReference { .. } => Some(self.reference_weight),
-                    WeightScheme::Any => Some(30),
-                    WeightScheme::None => None,
-                    WeightScheme::LinearBasedOnPrevious { .. } => Some(30),
-                },
-            })
-            .collect()
-    }
-
-    pub fn gzcl_4day(reference_weight: u64) -> Self {
-        Program {
+impl Gzcl4Day {
+    pub fn start(reference_weight: u64) -> Self {
+        Gzcl4Day {
             reference_weight,
             days: vec![
                 Day {
@@ -350,6 +339,28 @@ impl Program {
     }
 }
 
+impl Program for Gzcl4Day {
+    fn days(&self) -> &Vec<Day> {
+        &self.days
+    }
+
+    fn next_workout(&self) -> Vec<LiftAttempt> {
+        let day = self.days.first().unwrap();
+        day.lifts
+            .iter()
+            .map(|lift| LiftAttempt {
+                lift: lift.clone(),
+                weight: match lift.weight {
+                    WeightScheme::BasedOnReference { .. } => Some(self.reference_weight),
+                    WeightScheme::Any => Some(30),
+                    WeightScheme::None => None,
+                    WeightScheme::LinearBasedOnPrevious { .. } => Some(30),
+                },
+            })
+            .collect()
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use crate::program::*;
@@ -360,17 +371,17 @@ mod tests {
 
         #[test]
         fn can_create_program() {
-            Program::gzcl_4day(100);
+            Gzcl4Day::start(100);
         }
 
         #[test]
         fn stores_weights() {
             assert_eq!(
-                format!("{}", Program::gzcl_4day(100).next_workout()[0]),
+                format!("{}", Gzcl4Day::start(100).next_workout()[0]),
                 "Weighted Pullup -> 4x3,1x3+ @ 20"
             );
             assert_eq!(
-                format!("{}", Program::gzcl_4day(100).next_workout()[1]),
+                format!("{}", Gzcl4Day::start(100).next_workout()[1]),
                 "Pullup -> 3x7+"
             );
         }
@@ -378,7 +389,7 @@ mod tests {
         #[test]
         fn all_non_reference_weights_initialized_at_certain_value() {
             assert_eq!(
-                format!("{}", Program::gzcl_4day(100).next_workout()[3]),
+                format!("{}", Gzcl4Day::start(100).next_workout()[3]),
                 "Face Pull -> 2x15,1x15-25 @ 30"
             );
         }
