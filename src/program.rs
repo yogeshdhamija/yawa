@@ -279,15 +279,25 @@ pub struct Day {
 #[derive(Clone, Debug)]
 pub struct Program {
     pub days: Vec<Day>,
+    pub reference_weight: u64,
 }
 
 impl Program {
-    pub fn next_workout(&self) -> Vec<&Lift> {
-        todo!()
+    pub fn next_workout(&self) -> Vec<LiftAttempt> {
+        // todo: buggy
+        let day = self.days.first().unwrap();
+        day.lifts
+            .iter()
+            .map(|lift| LiftAttempt {
+                lift: lift.clone(),
+                weight: Some(self.reference_weight),
+            })
+            .collect()
     }
 
-    pub fn gzcl_4day(_reference_weight: i64) -> Self {
+    pub fn gzcl_4day(reference_weight: u64) -> Self {
         Program {
+            reference_weight,
             days: vec![
                 Day {
                     name: "Pull".to_string(),
@@ -341,12 +351,16 @@ mod tests {
     use crate::program::*;
     use std::time::Duration;
 
-    // #[test]
-    // fn stores_weights() {
-    //     assert_eq!(
-    //     Program::gzcl_4day(135).next_workout().first().unwrap(),
-    //
-    // }
+    #[test]
+    fn stores_weights() {
+        assert_eq!(
+            format!(
+                "{}",
+                Program::gzcl_4day(100).next_workout().first().unwrap()
+            ),
+            "Weighted Pullup -> 4x3,1x3+ @ 20"
+        );
+    }
 
     #[test]
     fn can_make_lift_attempt() {
