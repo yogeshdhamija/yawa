@@ -252,13 +252,9 @@ impl Display for LiftAttempt {
                     res
                 )
             }
-            WeightScheme::Any => write!(
-                f,
-                "{} -> {} @ {}",
-                self.lift.name,
-                format(&self.lift.sets),
-                self.weight.unwrap()
-            ),
+            WeightScheme::Any => {
+                write!(f, "{} -> {} @ any", self.lift.name, format(&self.lift.sets))
+            }
             WeightScheme::LinearBasedOnPrevious { .. } => write!(
                 f,
                 "{} -> {} @ {}",
@@ -363,6 +359,16 @@ mod tests {
                 }
             ),
             "Pullups -> 3x5 @ 60"
+        );
+        assert_eq!(
+            format!(
+                "{}",
+                LiftAttempt {
+                    lift: Lift::parse("Pullups -> 3x5 @ any").unwrap(),
+                    weight: None,
+                }
+            ),
+            "Pullups -> 3x5 @ any"
         );
         assert_eq!(
             format!(
