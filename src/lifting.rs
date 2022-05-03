@@ -276,10 +276,71 @@ pub struct Day {
     pub lifts: Vec<Lift>,
 }
 
+impl Day {
+    pub fn parse(notation: &str) -> Result<Day> {
+        let error = "Cannot parse notation.";
+        let mut lines = notation.split("\n");
+        let name = lines.next().ok_or(anyhow!(error))?.trim().to_string();
+        let mut lifts = Vec::new();
+        lines.try_for_each(|line| {
+            return anyhow::Ok(if line.trim() != "" {
+                lifts.push(Lift::parse(line)?)
+            });
+        })?;
+        Ok(Day { name, lifts })
+    }
+}
+
+impl Display for Day {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        let lifts = self
+            .lifts
+            .iter()
+            .map(|lift| format!("{lift}"))
+            .collect::<Vec<String>>()
+            .join("\n");
+        write!(f, "{}\n{}\n\n", self.name, lifts)
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use crate::lifting::*;
     use std::time::Duration;
+
+    #[test]
+    fn can_parse_day() {
+        assert_eq!(
+            Day {
+                name: "Day Name".to_string(),
+                lifts: vec![
+                    Lift::parse("Bench press -> 3x5,1x5-6,1x6+ @ 2r").unwrap(),
+                    Lift::parse("Pullup -> 3x5,1x5-6,1x6+").unwrap()
+                ],
+            },
+            Day::parse(
+                "Day Name\nBench press -> 3x5,1x5-6,1x6+ @ 2r\nPullup -> 3x5,1x5-6,1x6+\n\n"
+            )
+            .unwrap()
+        );
+    }
+
+    #[test]
+    fn can_create_day() {
+        assert_eq!(
+            format!(
+                "{}",
+                Day {
+                    name: "Day Name".to_string(),
+                    lifts: vec![
+                        Lift::parse("Bench press -> 3x5,1x5-6,1x6+ @ 2r").unwrap(),
+                        Lift::parse("Pullup -> 3x5,1x5-6,1x6+").unwrap()
+                    ],
+                }
+            ),
+            "Day Name\nBench press -> 3x5,1x5-6,1x6+ @ 2r\nPullup -> 3x5,1x5-6,1x6+\n\n"
+        );
+    }
 
     #[test]
     fn can_make_lift_attempt() {
