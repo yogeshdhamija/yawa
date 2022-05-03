@@ -252,7 +252,14 @@ impl Display for LiftAttempt {
                     res
                 )
             }
-            _ => write!(
+            WeightScheme::Any => write!(
+                f,
+                "{} -> {} @ {}",
+                self.lift.name,
+                format(&self.lift.sets),
+                self.weight.unwrap()
+            ),
+            WeightScheme::LinearBasedOnPrevious { .. } => write!(
                 f,
                 "{} -> {} @ {}",
                 self.lift.name,
