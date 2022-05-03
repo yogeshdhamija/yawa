@@ -158,7 +158,12 @@ impl Display for Lift {
             .map(|x| format!("{}x{}", x.count, x.set))
             .collect::<Vec<String>>()
             .join(",");
-        write!(f, "{} -> {} @ {}", self.name, result, self.weight)
+
+        if format!("{}", self.weight) != "" {
+            write!(f, "{} -> {} @ {}", self.name, result, self.weight)
+        } else {
+            write!(f, "{} -> {}", self.name, result)
+        }
     }
 }
 
@@ -298,6 +303,10 @@ mod tests {
 
     #[test]
     fn can_display_lift_schemes() {
+        assert_eq!(
+            format!("{}", Lift::parse("Pullups -> 2x5,1x5-7,1x5+").unwrap()),
+            "Pullups -> 2x5,1x5-7,1x5+"
+        );
         assert_eq!(
             format!(
                 "{}",
