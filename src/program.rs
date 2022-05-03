@@ -136,6 +136,32 @@ pub struct Lift {
     weight: WeightScheme,
 }
 
+impl Display for Lift {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        struct Accum<'a> {
+            count: i64,
+            set: &'a Set,
+        }
+        let mut accumulated_sets: Vec<Accum> = Vec::new();
+        for set in &self.sets {
+            if accumulated_sets.last().filter(|x| x.set == set).is_some() {
+                accumulated_sets.last_mut().unwrap().count += 1;
+            } else {
+                accumulated_sets.push(Accum {
+                    count: 1,
+                    set: &set,
+                });
+            }
+        }
+        let result = accumulated_sets
+            .iter()
+            .map(|x| format!("{}x{}", x.count, x.set))
+            .collect::<Vec<String>>()
+            .join(",");
+        write!(f, "{} -> {} @ {}", self.name, result, self.weight)
+    }
+}
+
 impl Lift {
     fn parse(notation: &str) -> Result<Self> {
         let error = "Cannot parse notation";
@@ -267,6 +293,17 @@ mod tests {
                 ],
                 weight: WeightScheme::parse("0.2r").unwrap()
             }
+        );
+    }
+
+    #[test]
+    fn can_display_lift_schemes() {
+        assert_eq!(
+            format!(
+                "{}",
+                Lift::parse("Pullups -> 2x5,1x5-7,1x5+ @ 0.2r").unwrap()
+            ),
+            "Pullups -> 2x5,1x5-7,1x5+ @ 0.2r"
         );
     }
 
