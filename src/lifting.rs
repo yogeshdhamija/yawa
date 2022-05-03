@@ -276,11 +276,6 @@ pub struct Day {
     pub lifts: Vec<Lift>,
 }
 
-pub trait Program {
-    fn days(&self) -> &Vec<Day>;
-    fn next_workout(&self) -> Vec<LiftAttempt>;
-}
-
 #[cfg(test)]
 mod tests {
     use crate::lifting::*;

@@ -1,3 +1,4 @@
+use crate::programs::Gzcl4Day;
 use crate::services::ports::PersistenceAdapter;
 use anyhow::Result;
 use serde::{Deserialize, Serialize};
@@ -14,21 +15,24 @@ pub fn new() -> FileSystem {
 
 #[derive(Serialize, Deserialize)]
 struct Saveable {
-    reference_weight: u64,
+    program: String,
 }
 
 impl PersistenceAdapter for FileSystem {
-    fn persist(&self, reference_weight: u64) -> Result<()> {
+    fn persist(&self, program: &Gzcl4Day) -> Result<()> {
         create_dir_all("/tmp/yawa")?;
         let mut file = File::create("/tmp/yawa/saved.json")?;
-        let string = serde_json::to_string_pretty(&Saveable { reference_weight })?;
-        write!(file, "{string}")?;
+        let program_string = format!("{program}");
+        let json = serde_json::to_string_pretty(&Saveable {
+            program: program_string,
+        })?;
+        write!(file, "{json}")?;
         Ok(())
     }
-    fn summon(&self) -> Option<u64> {
-        let file = File::open("/tmp/yawa/saved.json").ok()?;
+    fn summon(&self) -> Result<Gzcl4Day> {
+        let file = File::open("/tmp/yawa/saved.json")?;
         let reader = BufReader::new(file);
-        let saved: Saveable = serde_json::from_reader(reader).ok()?;
-        Some(saved.reference_weight)
+        let saved: Saveable = serde_json::from_reader(reader)?;
+        Ok(Gzcl4Day::parse(&saved.program)?)
     }
 }

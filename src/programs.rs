@@ -1,4 +1,6 @@
 use crate::lifting::*;
+use anyhow::Result;
+use std::fmt::{Display, Formatter};
 
 #[derive(Clone, Debug)]
 pub struct Gzcl4Day {
@@ -58,12 +60,26 @@ impl Gzcl4Day {
     }
 }
 
-impl Program for Gzcl4Day {
-    fn days(&self) -> &Vec<Day> {
+impl Display for Gzcl4Day {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.reference_weight)
+    }
+}
+
+impl Gzcl4Day {
+    pub fn parse(notation: &str) -> Result<Self> {
+        Ok(Gzcl4Day::start(notation.parse::<u64>()?))
+    }
+
+    pub fn name(&self) -> String {
+        "GZCL-based 4-day cycle".to_string()
+    }
+
+    pub fn days(&self) -> &Vec<Day> {
         &self.days
     }
 
-    fn next_workout(&self) -> Vec<LiftAttempt> {
+    pub fn next_workout(&self) -> Vec<LiftAttempt> {
         let day = self.days.first().unwrap();
         day.lifts
             .iter()

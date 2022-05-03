@@ -42,10 +42,13 @@ fn starts_program() {
     run_and_assert("status")
         .failure()
         .stderr(contains("Start a lifting first!"));
-    run_and_assert("start -r 105").success();
+    run_and_assert("start -r 105")
+        .success()
+        .stdout(contains("Started program: GZCL-based 4-day cycle"));
     run_and_assert("status")
         .success()
-        .stdout("Current reference weight: 105\n");
+        .stdout(contains("Current program: GZCL-based 4-day cycle\n"))
+        .stdout(contains("Current reference weight: 105\n"));
 }
 
 fn starting_program_needs_reference_weight() {
