@@ -136,33 +136,41 @@ pub struct Lift {
     weight: WeightScheme,
 }
 
+fn format(sets: &Vec<Set>) -> String {
+    struct Accum<'a> {
+        count: i64,
+        set: &'a Set,
+    }
+    let mut accumulated_sets: Vec<Accum> = Vec::new();
+    for set in sets {
+        if accumulated_sets.last().filter(|x| x.set == set).is_some() {
+            accumulated_sets.last_mut().unwrap().count += 1;
+        } else {
+            accumulated_sets.push(Accum {
+                count: 1,
+                set: &set,
+            });
+        }
+    }
+    accumulated_sets
+        .iter()
+        .map(|x| format!("{}x{}", x.count, x.set))
+        .collect::<Vec<String>>()
+        .join(",")
+}
+
 impl Display for Lift {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        struct Accum<'a> {
-            count: i64,
-            set: &'a Set,
-        }
-        let mut accumulated_sets: Vec<Accum> = Vec::new();
-        for set in &self.sets {
-            if accumulated_sets.last().filter(|x| x.set == set).is_some() {
-                accumulated_sets.last_mut().unwrap().count += 1;
-            } else {
-                accumulated_sets.push(Accum {
-                    count: 1,
-                    set: &set,
-                });
-            }
-        }
-        let result = accumulated_sets
-            .iter()
-            .map(|x| format!("{}x{}", x.count, x.set))
-            .collect::<Vec<String>>()
-            .join(",");
-
         if format!("{}", self.weight) != "" {
-            write!(f, "{} -> {} @ {}", self.name, result, self.weight)
+            write!(
+                f,
+                "{} -> {} @ {}",
+                self.name,
+                format(&self.sets),
+                self.weight
+            )
         } else {
-            write!(f, "{} -> {}", self.name, result)
+            write!(f, "{} -> {}", self.name, format(&self.sets))
         }
     }
 }
@@ -211,6 +219,24 @@ impl Lift {
     }
 }
 
+#[derive(Clone, Debug, PartialEq)]
+pub struct LiftAttempt {
+    lift: Lift,
+    weight: i64,
+}
+
+impl Display for LiftAttempt {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        write!(
+            f,
+            "{} -> {} @ {}",
+            self.lift.name,
+            format(&self.lift.sets),
+            self.weight
+        )
+    }
+}
+
 #[derive(Clone, Debug)]
 pub struct Day {
     pub name: String,
@@ -223,7 +249,11 @@ pub struct Program {
 }
 
 impl Program {
-    pub fn gzcl_4day() -> Self {
+    pub fn next_workout(&self) -> Vec<&Lift> {
+        todo!()
+    }
+
+    pub fn gzcl_4day(_reference_weight: i64) -> Self {
         Program {
             days: vec![
                 Day {
@@ -278,9 +308,25 @@ mod tests {
     use crate::program::*;
     use std::time::Duration;
 
+    // #[test]
+    // fn stores_weights() {
+    //     assert_eq!(
+    //     Program::gzcl_4day(135).next_workout().first().unwrap(),
+    //
+    // }
+
+    #[test]
+    fn can_make_lift_attempt() {
+        let attempt = LiftAttempt {
+            lift: Lift::parse("Pullups -> 3x5 @ add10").unwrap(),
+            weight: 25,
+        };
+        assert_eq!(format!("{attempt}"), "Pullups -> 3x5 @ 25")
+    }
+
     #[test]
     fn can_create_program() {
-        Program::gzcl_4day();
+        Program::gzcl_4day(100);
     }
 
     #[test]
