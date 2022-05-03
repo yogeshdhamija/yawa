@@ -25,6 +25,9 @@ enum Commands {
 
     /// Show the next workout in your program.
     Next {},
+
+    /// Complete the next workout of your program! (Run 'next' to see it first!)
+    Complete {},
 }
 
 pub fn start_program_with_args(persistence_adapter: &impl PersistenceAdapter) -> Result<()> {
@@ -51,6 +54,10 @@ pub fn start_program_with_args(persistence_adapter: &impl PersistenceAdapter) ->
                 .join("\n");
             let string = format!("=== Day: {} ===\n{}", res.0, lifts);
             println!("{}", string);
+        }
+        Commands::Complete {} => {
+            service::next_show(persistence_adapter)?;
+            println!("Well done!");
         }
     }
 

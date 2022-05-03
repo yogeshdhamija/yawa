@@ -18,6 +18,8 @@ fn run_all() {
     starting_program_needs_reference_weight();
     println!("prints_next_workout");
     prints_next_workout();
+    println!("completes_workout");
+    completes_workout();
 }
 
 // Tests (tech debt-- make them runnable concurrently and therefore able to have
@@ -55,6 +57,17 @@ fn starting_program_needs_reference_weight() {
     fresh_run_and_assert("start")
         .failure()
         .stderr(contains("REFERENCE_WEIGHT"));
+}
+
+fn completes_workout() {
+    clean_slate();
+    run_and_assert("complete")
+        .failure()
+        .stderr(contains("Start a lifting first!"));
+    run_and_assert("start -r 100");
+    run_and_assert("complete")
+        .success()
+        .stdout(contains("Well done!"));
 }
 
 fn prints_next_workout() {
