@@ -355,24 +355,33 @@ mod tests {
     use crate::program::*;
     use std::time::Duration;
 
-    #[test]
-    fn stores_weights() {
-        assert_eq!(
-            format!("{}", Program::gzcl_4day(100).next_workout()[0]),
-            "Weighted Pullup -> 4x3,1x3+ @ 20"
-        );
-        assert_eq!(
-            format!("{}", Program::gzcl_4day(100).next_workout()[1]),
-            "Pullup -> 3x7+"
-        );
-    }
+    mod gzcl_4day {
+        use super::*;
 
-    #[test]
-    fn all_non_reference_weights_initialized_at_certain_value() {
-        assert_eq!(
-            format!("{}", Program::gzcl_4day(100).next_workout()[3]),
-            "Face Pull -> 2x15,1x15-25 @ 30"
-        );
+        #[test]
+        fn can_create_program() {
+            Program::gzcl_4day(100);
+        }
+
+        #[test]
+        fn stores_weights() {
+            assert_eq!(
+                format!("{}", Program::gzcl_4day(100).next_workout()[0]),
+                "Weighted Pullup -> 4x3,1x3+ @ 20"
+            );
+            assert_eq!(
+                format!("{}", Program::gzcl_4day(100).next_workout()[1]),
+                "Pullup -> 3x7+"
+            );
+        }
+
+        #[test]
+        fn all_non_reference_weights_initialized_at_certain_value() {
+            assert_eq!(
+                format!("{}", Program::gzcl_4day(100).next_workout()[3]),
+                "Face Pull -> 2x15,1x15-25 @ 30"
+            );
+        }
     }
 
     #[test]
@@ -407,11 +416,6 @@ mod tests {
             ),
             "Pullups -> 3x5 @ 25"
         );
-    }
-
-    #[test]
-    fn can_create_program() {
-        Program::gzcl_4day(100);
     }
 
     #[test]
