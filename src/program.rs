@@ -284,13 +284,17 @@ pub struct Program {
 
 impl Program {
     pub fn next_workout(&self) -> Vec<LiftAttempt> {
-        // todo: buggy
         let day = self.days.first().unwrap();
         day.lifts
             .iter()
             .map(|lift| LiftAttempt {
                 lift: lift.clone(),
-                weight: Some(self.reference_weight),
+                weight: match lift.weight {
+                    WeightScheme::BasedOnReference { .. } => Some(self.reference_weight),
+                    WeightScheme::Any => Some(30),
+                    WeightScheme::None => None,
+                    WeightScheme::LinearBasedOnPrevious { .. } => Some(30),
+                },
             })
             .collect()
     }
@@ -354,11 +358,20 @@ mod tests {
     #[test]
     fn stores_weights() {
         assert_eq!(
-            format!(
-                "{}",
-                Program::gzcl_4day(100).next_workout().first().unwrap()
-            ),
+            format!("{}", Program::gzcl_4day(100).next_workout()[0]),
             "Weighted Pullup -> 4x3,1x3+ @ 20"
+        );
+        assert_eq!(
+            format!("{}", Program::gzcl_4day(100).next_workout()[1]),
+            "Pullup -> 3x7+"
+        );
+    }
+
+    #[test]
+    fn all_non_reference_weights_initialized_at_certain_value() {
+        assert_eq!(
+            format!("{}", Program::gzcl_4day(100).next_workout()[3]),
+            "Face Pull -> 2x15,1x15-25 @ 30"
         );
     }
 
