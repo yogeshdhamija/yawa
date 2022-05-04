@@ -43,7 +43,7 @@ fn starts_program() {
     clean_slate();
     run_and_assert("status")
         .failure()
-        .stderr(contains("Start a lifting first!"));
+        .stderr(contains("Start a lifting program first!"));
     run_and_assert("start -r 105")
         .success()
         .stdout(contains("Started program: GZCL-based 4-day cycle"));
@@ -63,7 +63,7 @@ fn completes_workout() {
     clean_slate();
     run_and_assert("complete")
         .failure()
-        .stderr(contains("Start a lifting first!"));
+        .stderr(contains("Start a lifting program first!"));
     run_and_assert("start -r 100");
     run_and_assert_with_stdin("complete", "n\nn\nn\nn\nn\n")
         .success()
@@ -78,7 +78,7 @@ fn prints_next_workout() {
     clean_slate();
     run_and_assert("next")
         .failure()
-        .stderr(contains("Start a lifting first!"));
+        .stderr(contains("Start a lifting program first!"));
     run_and_assert("start -r 100");
     run_and_assert("next")
         .success()

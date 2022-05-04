@@ -5,7 +5,9 @@ use crate::UserInputAdapter;
 use anyhow::{anyhow, Result};
 
 pub fn get_current_program(persistence_adapter: &impl PersistenceAdapter) -> Result<Program> {
-    with_program(persistence_adapter, |p| p)
+    persistence_adapter
+        .summon()
+        .or(Err(anyhow!("Start a lifting program first!")))
 }
 
 pub fn complete_workout(
@@ -50,6 +52,6 @@ where
     return if let Ok(program) = persistence_adapter.summon() {
         Ok(closure(program))
     } else {
-        Err(anyhow!("Start a lifting first!"))
+        Err(anyhow!("Start a lifting program first!"))
     };
 }
