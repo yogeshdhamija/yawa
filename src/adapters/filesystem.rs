@@ -21,10 +21,10 @@ pub fn new() -> FileSystem {
 #[derive(Serialize, Deserialize)]
 struct State {
     name: String,
-    reference_weight: u64,
+    reference_weight: usize,
     days_in_notation: Vec<String>,
-    weights: HashMap<String, u64>,
-    current_day: u64,
+    weights: HashMap<String, usize>,
+    current_day: usize,
     past_attempt_results_in_notation: Vec<Vec<String>>,
 }
 

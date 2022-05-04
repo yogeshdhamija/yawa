@@ -4,10 +4,10 @@ use std::collections::HashMap;
 #[derive(Clone, Debug, PartialEq)]
 pub struct Program {
     pub days: Vec<Day>,
-    pub reference_weight: u64,
+    pub reference_weight: usize,
     pub name: String,
-    pub weights: HashMap<Lift, u64>,
-    pub current_day: u64,
+    pub weights: HashMap<Lift, usize>,
+    pub current_day: usize,
     pub past_attempt_results: Vec<Vec<LiftAttemptResult>>,
 }
 
@@ -18,7 +18,7 @@ impl Program {
     }
 
     fn increment_day(mut self) -> Self {
-        self.current_day = if self.current_day + 1 < self.days.len() as u64 {
+        self.current_day = if self.current_day + 1 < self.days.len() {
             self.current_day + 1
         } else {
             0
@@ -27,7 +27,7 @@ impl Program {
     }
 
     fn increment_non_reference_weights(mut self, results: &[LiftAttemptResult]) -> Self {
-        self.days[self.current_day as usize]
+        self.days[self.current_day]
             .lifts
             .iter()
             .enumerate()
@@ -53,7 +53,7 @@ impl Program {
     }
 
     pub fn next_workout(&self) -> Vec<LiftAttempt> {
-        let day = &self.days[self.current_day as usize];
+        let day = &self.days[self.current_day];
         day.lifts
             .iter()
             .map(|lift| LiftAttempt {
@@ -71,7 +71,7 @@ impl Program {
     }
 }
 
-pub fn start_gzcl_4day(reference_weight: u64) -> Program {
+pub fn start_gzcl_4day(reference_weight: usize) -> Program {
     fn parse(str: &str) -> Lift {
         Lift::parse(str).unwrap()
     }

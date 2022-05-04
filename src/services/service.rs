@@ -24,19 +24,19 @@ pub fn next_workout(
 ) -> Result<(String, Vec<LiftAttempt>)> {
     with_program(persistence_adapter, |program| {
         (
-            program.days[program.current_day as usize].name.clone(),
+            program.days[program.current_day].name.clone(),
             program.next_workout(),
         )
     })
 }
 
-fn start_program(r: u64) -> Program {
+fn start_program(r: usize) -> Program {
     start_gzcl_4day(r)
 }
 
 pub fn start_and_save_new_program(
     persistence_adapter: &impl PersistenceAdapter,
-    reference_weight: u64,
+    reference_weight: usize,
 ) -> Result<Program> {
     let program = start_program(reference_weight);
     persistence_adapter.persist(&program)?;

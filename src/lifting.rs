@@ -8,7 +8,7 @@ pub enum WeightScheme {
     BasedOnReference { multiplier: f64, offset: i64 },
     Any,
     None,
-    LinearBasedOnPrevious { amount_to_increase: u64 },
+    LinearBasedOnPrevious { amount_to_increase: usize },
 }
 
 impl Display for WeightScheme {
@@ -64,15 +64,15 @@ impl WeightScheme {
 #[derive(Clone, Debug, PartialEq)]
 pub enum Set {
     Amrap {
-        minimum_reps: u64,
+        minimum_reps: usize,
     },
     Range {
-        maximum_reps: u64,
-        minimum_reps: u64,
+        maximum_reps: usize,
+        minimum_reps: usize,
     },
     Any,
     Defined {
-        reps: u64,
+        reps: usize,
     },
     Time {
         duration: Duration,
@@ -242,7 +242,7 @@ impl Lift {
 #[derive(Clone, Debug, PartialEq)]
 pub struct LiftAttempt {
     pub lift: Lift,
-    pub weight: Option<u64>,
+    pub weight: Option<usize>,
 }
 
 #[derive(Copy, Clone, Debug, PartialEq)]

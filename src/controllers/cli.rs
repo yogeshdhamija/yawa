@@ -17,7 +17,7 @@ enum Commands {
         /// The reference weight to start with (in lbs). 45 is a good number to start with if it's
         /// your first time.
         #[clap(short)]
-        reference_weight: u64,
+        reference_weight: usize,
     },
 
     /// Display current status of your lifting lifting.
