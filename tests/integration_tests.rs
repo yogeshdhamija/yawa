@@ -68,6 +68,9 @@ fn completes_workout() {
     run_and_assert("complete")
         .success()
         .stdout(contains("Well done!"));
+    run_and_assert("next")
+        .success()
+        .stdout(contains("Day: Push"));
 }
 
 fn prints_next_workout() {

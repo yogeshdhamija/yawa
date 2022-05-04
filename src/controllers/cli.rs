@@ -56,7 +56,7 @@ pub fn start_program_with_args(persistence_adapter: &impl PersistenceAdapter) ->
             println!("{}", string);
         }
         Commands::Complete {} => {
-            service::next_show(persistence_adapter)?;
+            service::complete(persistence_adapter)?;
             println!("Well done!");
         }
     }

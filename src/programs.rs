@@ -7,9 +7,20 @@ pub struct Program {
     pub reference_weight: u64,
     pub name: String,
     pub weights: HashMap<String, u64>,
+    pub current_day: u64,
 }
 
 impl Program {
+    pub fn increment_day(self) -> Program {
+        Program {
+            current_day: if self.current_day + 1 < self.days.len() as u64 {
+                self.current_day + 1
+            } else {
+                0
+            },
+            ..self
+        }
+    }
     pub fn next_workout(&self) -> Vec<LiftAttempt> {
         let day = self.days.first().unwrap();
         day.lifts
@@ -75,6 +86,7 @@ pub fn start_gzcl_4day(reference_weight: u64) -> Program {
                 ],
             },
         ],
+        current_day: 0,
     }
 }
 
@@ -100,5 +112,35 @@ mod tests {
             format!("{}", start_gzcl_4day(100).next_workout()[3]),
             "Face Pull -> 2x15,1x15-25 @ any"
         );
+    }
+
+    mod incrementing {
+        use super::*;
+
+        fn setup() -> Program {
+            Program {
+                days: vec![
+                    Day {
+                        name: "A".to_string(),
+                        lifts: vec![],
+                    },
+                    Day {
+                        name: "B".to_string(),
+                        lifts: vec![],
+                    },
+                ],
+                reference_weight: 0,
+                name: "".to_string(),
+                weights: Default::default(),
+                current_day: 0,
+            }
+        }
+
+        #[test]
+        fn increments_nicely() {
+            assert_eq!(setup().current_day, 0);
+            assert_eq!(setup().increment_day().current_day, 1);
+            assert_eq!(setup().increment_day().increment_day().current_day, 0);
+        }
     }
 }

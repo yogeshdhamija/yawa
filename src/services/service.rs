@@ -7,12 +7,20 @@ pub fn status(persistence_adapter: &impl PersistenceAdapter) -> Result<Program> 
     with_program(persistence_adapter, |p| p)
 }
 
+pub fn complete(persistence_adapter: &impl PersistenceAdapter) -> Result<()> {
+    with_program(persistence_adapter, |program| {
+        let program1 = program.increment_day();
+        persistence_adapter.persist(&program1)
+    })??;
+    Ok(())
+}
+
 pub fn next_show(
     persistence_adapter: &impl PersistenceAdapter,
 ) -> Result<(String, Vec<LiftAttempt>)> {
     with_program(persistence_adapter, |program| {
         (
-            program.days.first().unwrap().name.clone(),
+            program.days[program.current_day as usize].name.clone(),
             program.next_workout(),
         )
     })
