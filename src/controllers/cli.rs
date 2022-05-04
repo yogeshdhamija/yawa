@@ -1,4 +1,4 @@
-use crate::services::ports::PersistenceAdapter;
+use crate::services::ports::{PersistenceAdapter, UserInputAdapter};
 use crate::services::service;
 use anyhow::Result;
 use clap::{Parser, Subcommand};
@@ -30,7 +30,10 @@ enum Commands {
     Complete {},
 }
 
-pub fn start_program_with_args(persistence_adapter: &impl PersistenceAdapter) -> Result<()> {
+pub fn start_program_with_args(
+    persistence_adapter: &impl PersistenceAdapter,
+    tui_adapter: &impl UserInputAdapter,
+) -> Result<()> {
     let args = Args::parse();
     match &args.command {
         Commands::Status {} => {
@@ -56,7 +59,7 @@ pub fn start_program_with_args(persistence_adapter: &impl PersistenceAdapter) ->
             println!("{}", string);
         }
         Commands::Complete {} => {
-            service::complete(persistence_adapter)?;
+            service::complete(persistence_adapter, tui_adapter)?;
             println!("Well done!");
         }
     }

@@ -1,14 +1,19 @@
 use crate::lifting::LiftAttempt;
 use crate::programs::{start_gzcl_4day, Program};
 use crate::services::ports::PersistenceAdapter;
+use crate::UserInputAdapter;
 use anyhow::{anyhow, Result};
 
 pub fn status(persistence_adapter: &impl PersistenceAdapter) -> Result<Program> {
     with_program(persistence_adapter, |p| p)
 }
 
-pub fn complete(persistence_adapter: &impl PersistenceAdapter) -> Result<()> {
+pub fn complete(
+    persistence_adapter: &impl PersistenceAdapter,
+    tui_adapter: &impl UserInputAdapter,
+) -> Result<()> {
     with_program(persistence_adapter, |program| {
+        tui_adapter.check_complete(&program.next_workout());
         let program1 = program.increment_day();
         persistence_adapter.persist(&program1)
     })??;

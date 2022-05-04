@@ -236,6 +236,12 @@ pub struct LiftAttempt {
     pub weight: Option<u64>,
 }
 
+#[derive(Clone, Debug, PartialEq)]
+pub enum LiftAttemptResult {
+    NotCompleted,
+    Completed { completed_maximum_reps: bool },
+}
+
 impl Display for LiftAttempt {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         match self.lift.weight {

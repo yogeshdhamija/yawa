@@ -14,7 +14,6 @@ use std::io::Read;
 use std::io::Write;
 
 pub struct FileSystem {}
-
 pub fn new() -> FileSystem {
     FileSystem {}
 }
