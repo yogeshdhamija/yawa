@@ -72,7 +72,7 @@ fn start(persistence_adapter: &impl PersistenceAdapter, reference_weight: &usize
 }
 
 fn status(persistence_adapter: &impl PersistenceAdapter) -> Result<()> {
-    let program = service::get_current_program(persistence_adapter)?;
+    let program = service::get_program(persistence_adapter)?;
     println!(
         "Current program: {}\nCurrent reference weight: {}",
         program.name, program.reference_weight

@@ -2,34 +2,36 @@ use crate::lifting::LiftAttempt;
 use crate::programs::{start_gzcl_4day, Program};
 use crate::services::ports::PersistenceAdapter;
 use crate::UserInputAdapter;
-use anyhow::{anyhow, Result};
+use anyhow::{anyhow, Error, Result};
 
-pub fn get_current_program(persistence_adapter: &impl PersistenceAdapter) -> Result<Program> {
-    persistence_adapter
-        .summon()
-        .or(Err(anyhow!("Start a lifting program first!")))
+const LIFTING_PROGRAM_NOT_STARTED_ERROR_MESSAGE: &'static str = "Start a lifting program first!";
+
+fn not_started_error() -> Result<Program, Error> {
+    Err(anyhow!(LIFTING_PROGRAM_NOT_STARTED_ERROR_MESSAGE))
 }
 
 pub fn complete_workout(
     persistence_adapter: &impl PersistenceAdapter,
     tui_adapter: &impl UserInputAdapter,
 ) -> Result<()> {
-    with_program(persistence_adapter, |program| {
-        let results = tui_adapter.check_complete(&program.next_workout())?;
-        persistence_adapter.persist(&program.complete_workout(&results))
-    })??;
+    let program = get_program(persistence_adapter)?;
+    let results = tui_adapter.check_complete(&program.next_workout())?;
+    persistence_adapter.persist(&program.complete_workout(&results))?;
     Ok(())
 }
 
 pub fn next_workout(
     persistence_adapter: &impl PersistenceAdapter,
 ) -> Result<(String, Vec<LiftAttempt>)> {
-    with_program(persistence_adapter, |program| {
-        (
-            program.days[program.current_day].name.clone(),
-            program.next_workout(),
-        )
-    })
+    let program = get_program(persistence_adapter)?;
+    Ok((
+        program.days[program.current_day].name.clone(),
+        program.next_workout(),
+    ))
+}
+
+pub fn get_program(persistence_adapter: &impl PersistenceAdapter) -> Result<Program> {
+    persistence_adapter.summon().or(not_started_error())
 }
 
 fn start_program(r: usize) -> Program {
@@ -43,15 +45,4 @@ pub fn start_and_save_new_program(
     let program = start_program(reference_weight);
     persistence_adapter.persist(&program)?;
     return Ok(program);
-}
-
-fn with_program<F, R>(persistence_adapter: &impl PersistenceAdapter, closure: F) -> Result<R>
-where
-    F: FnOnce(Program) -> R,
-{
-    return if let Ok(program) = persistence_adapter.summon() {
-        Ok(closure(program))
-    } else {
-        Err(anyhow!("Start a lifting program first!"))
-    };
 }
