@@ -13,8 +13,17 @@ pub struct Program {
 
 impl Program {
     pub fn complete_workout(self, results: &[LiftAttemptResult]) -> Program {
-        self.increment_non_reference_weights(results)
+        self.save_results(results)
+            .increment_non_reference_weights()
             .increment_day()
+    }
+
+    fn save_results(mut self, results: &[LiftAttemptResult]) -> Self {
+        while self.past_attempt_results.len() <= self.current_day {
+            self.past_attempt_results.push(Vec::new());
+        }
+        self.past_attempt_results[self.current_day] = Vec::from(results);
+        self
     }
 
     fn increment_day(mut self) -> Self {
@@ -26,14 +35,14 @@ impl Program {
         self
     }
 
-    fn increment_non_reference_weights(mut self, results: &[LiftAttemptResult]) -> Self {
+    fn increment_non_reference_weights(mut self) -> Self {
         self.days[self.current_day]
             .lifts
             .iter()
             .enumerate()
             .for_each(|(index, lift)| {
                 if let WeightScheme::LinearBasedOnPrevious { amount_to_increase } = lift.weight {
-                    if results[index]
+                    if self.past_attempt_results[self.current_day][index]
                         == (LiftAttemptResult::Completed {
                             completed_maximum_reps: true,
                         })
