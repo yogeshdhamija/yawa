@@ -251,6 +251,35 @@ pub enum LiftAttemptResult {
     Completed { completed_maximum_reps: bool },
 }
 
+impl Display for LiftAttemptResult {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        match self {
+            LiftAttemptResult::NotCompleted => write!(f, "NotCompleted"),
+            LiftAttemptResult::Completed {
+                completed_maximum_reps,
+            } => match completed_maximum_reps {
+                true => write!(f, "Completed+MaxReps"),
+                false => write!(f, "Completed"),
+            },
+        }
+    }
+}
+
+impl LiftAttemptResult {
+    fn parse(notation: &str) -> Result<Self> {
+        match notation {
+            "NotCompleted" => Ok(LiftAttemptResult::NotCompleted),
+            "Completed" => Ok(LiftAttemptResult::Completed {
+                completed_maximum_reps: false,
+            }),
+            "Completed+MaxReps" => Ok(LiftAttemptResult::Completed {
+                completed_maximum_reps: true,
+            }),
+            _ => Err(anyhow!("Cannot parse notation")),
+        }
+    }
+}
+
 impl Display for LiftAttempt {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         match self.lift.weight {
@@ -322,6 +351,45 @@ impl Display for Day {
 mod tests {
     use crate::lifting::*;
     use std::time::Duration;
+
+    #[test]
+    fn can_serialize_lift_attempt_result() {
+        assert_eq!("NotCompleted", LiftAttemptResult::NotCompleted.to_string());
+        assert_eq!(
+            "Completed",
+            LiftAttemptResult::Completed {
+                completed_maximum_reps: false
+            }
+            .to_string()
+        );
+        assert_eq!(
+            "Completed+MaxReps",
+            LiftAttemptResult::Completed {
+                completed_maximum_reps: true
+            }
+            .to_string()
+        );
+    }
+
+    #[test]
+    fn can_parse_lift_attempt_result() {
+        assert_eq!(
+            LiftAttemptResult::parse("NotCompleted").unwrap(),
+            LiftAttemptResult::NotCompleted
+        );
+        assert_eq!(
+            LiftAttemptResult::parse("Completed").unwrap(),
+            LiftAttemptResult::Completed {
+                completed_maximum_reps: false
+            }
+        );
+        assert_eq!(
+            LiftAttemptResult::parse("Completed+MaxReps").unwrap(),
+            LiftAttemptResult::Completed {
+                completed_maximum_reps: true
+            }
+        );
+    }
 
     #[test]
     fn can_parse_day() {

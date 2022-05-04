@@ -25,6 +25,7 @@ struct State {
     days_in_notation: Vec<String>,
     weights: HashMap<String, u64>,
     current_day: u64,
+    past_attempt_results_in_notation: Vec<Vec<String>>,
 }
 
 impl Program {
@@ -46,6 +47,7 @@ impl Program {
             reference_weight: state.reference_weight,
             name: state.name,
             current_day: state.current_day,
+            past_attempt_results: vec![],
         })
     }
 }
@@ -64,7 +66,8 @@ impl Display for Program {
                 reference_weight: self.reference_weight,
                 days_in_notation: self.days.iter().map(|it| format!("{it}")).collect(),
                 weights,
-                current_day: self.current_day
+                current_day: self.current_day,
+                past_attempt_results_in_notation: vec![]
             })
             .unwrap()
         )

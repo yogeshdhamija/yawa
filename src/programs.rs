@@ -8,10 +8,25 @@ pub struct Program {
     pub name: String,
     pub weights: HashMap<Lift, u64>,
     pub current_day: u64,
+    pub past_attempt_results: Vec<Vec<LiftAttemptResult>>,
 }
 
 impl Program {
     pub fn complete_workout(mut self, results: &[LiftAttemptResult]) -> Program {
+        self.increment_non_reference_weights(results);
+        self.increment_day();
+        self
+    }
+
+    fn increment_day(&mut self) {
+        self.current_day = if self.current_day + 1 < self.days.len() as u64 {
+            self.current_day + 1
+        } else {
+            0
+        };
+    }
+
+    fn increment_non_reference_weights(&mut self, results: &[LiftAttemptResult]) {
         self.days[self.current_day as usize]
             .lifts
             .iter()
@@ -34,15 +49,8 @@ impl Program {
                     }
                 }
             });
-        Program {
-            current_day: if self.current_day + 1 < self.days.len() as u64 {
-                self.current_day + 1
-            } else {
-                0
-            },
-            ..self
-        }
     }
+
     pub fn next_workout(&self) -> Vec<LiftAttempt> {
         let day = &self.days[self.current_day as usize];
         day.lifts
@@ -123,6 +131,7 @@ pub fn start_gzcl_4day(reference_weight: u64) -> Program {
             },
         ],
         current_day: 0,
+        past_attempt_results: vec![],
     }
 }
 
@@ -156,7 +165,7 @@ mod tests {
 
     mod incrementing {
         use super::*;
-        use crate::lifting::LiftAttemptResult::Completed;
+        use crate::lifting::LiftAttemptResult::{Completed, NotCompleted};
 
         #[test]
         fn increments_weights() {
@@ -194,6 +203,95 @@ mod tests {
             assert_eq!(after.weights[&lift_not_incremented], 20);
         }
 
+        #[test]
+        fn doesnt_increment_reference_weight_if_any_not_completed() {
+            let completed_all = [Completed {
+                completed_maximum_reps: true,
+            }; 5];
+            let one_incomplete = [
+                NotCompleted,
+                Completed {
+                    completed_maximum_reps: true,
+                },
+                Completed {
+                    completed_maximum_reps: true,
+                },
+                Completed {
+                    completed_maximum_reps: true,
+                },
+                Completed {
+                    completed_maximum_reps: true,
+                },
+            ];
+            assert_eq!(start_gzcl_4day(100).reference_weight, 100);
+            assert_eq!(
+                start_gzcl_4day(100)
+                    .complete_workout(&completed_all)
+                    .reference_weight,
+                100
+            );
+            assert_eq!(
+                start_gzcl_4day(100)
+                    .complete_workout(&completed_all)
+                    .complete_workout(&completed_all)
+                    .reference_weight,
+                100
+            );
+            assert_eq!(
+                start_gzcl_4day(100)
+                    .complete_workout(&one_incomplete)
+                    .complete_workout(&completed_all)
+                    .complete_workout(&completed_all)
+                    .reference_weight,
+                100
+            );
+            assert_eq!(
+                start_gzcl_4day(100)
+                    .complete_workout(&completed_all)
+                    .complete_workout(&completed_all)
+                    .complete_workout(&completed_all)
+                    .complete_workout(&completed_all)
+                    .reference_weight,
+                100
+            );
+        }
+        #[test]
+        fn increments_reference_weight_if_all_completed() {
+            let completed_all = [Completed {
+                completed_maximum_reps: true,
+            }; 5];
+            assert_eq!(start_gzcl_4day(100).reference_weight, 100);
+            assert_eq!(
+                start_gzcl_4day(100)
+                    .complete_workout(&completed_all)
+                    .reference_weight,
+                100
+            );
+            assert_eq!(
+                start_gzcl_4day(100)
+                    .complete_workout(&completed_all)
+                    .complete_workout(&completed_all)
+                    .reference_weight,
+                100
+            );
+            assert_eq!(
+                start_gzcl_4day(100)
+                    .complete_workout(&completed_all)
+                    .complete_workout(&completed_all)
+                    .complete_workout(&completed_all)
+                    .reference_weight,
+                100
+            );
+            assert_eq!(
+                start_gzcl_4day(100)
+                    .complete_workout(&completed_all)
+                    .complete_workout(&completed_all)
+                    .complete_workout(&completed_all)
+                    .complete_workout(&completed_all)
+                    .reference_weight,
+                105
+            );
+        }
         #[test]
         fn increments_each_day_and_rolls_over() {
             assert_eq!(start_gzcl_4day(100).current_day, 0);
