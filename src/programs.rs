@@ -6,12 +6,12 @@ pub struct Program {
     pub days: Vec<Day>,
     pub reference_weight: u64,
     pub name: String,
-    pub weights: HashMap<String, u64>,
+    pub weights: HashMap<Lift, u64>,
     pub current_day: u64,
 }
 
 impl Program {
-    pub fn increment_day(self) -> Program {
+    pub fn increment_day(self, _results: &[LiftAttemptResult]) -> Program {
         Program {
             current_day: if self.current_day + 1 < self.days.len() as u64 {
                 self.current_day + 1
@@ -31,7 +31,9 @@ impl Program {
                     WeightScheme::BasedOnReference { .. } => Some(self.reference_weight),
                     WeightScheme::Any => None,
                     WeightScheme::None => None,
-                    WeightScheme::LinearBasedOnPrevious { .. } => None,
+                    WeightScheme::LinearBasedOnPrevious { .. } => {
+                        self.weights.get(lift).map(|it| *it)
+                    }
                 },
             })
             .collect()
@@ -42,7 +44,16 @@ pub fn start_gzcl_4day(reference_weight: u64) -> Program {
     Program {
         name: "GZCL-based 4-day cycle".to_string(),
         reference_weight,
-        weights: HashMap::new(),
+        weights: HashMap::from([
+            (
+                Lift::parse("Face Pull -> 2x15,1x15-25 @ add20").unwrap(),
+                30,
+            ),
+            (
+                Lift::parse("Cable Curl -> 2x15,1x15-25 @ add20").unwrap(),
+                20,
+            ),
+        ]),
         days: vec![
             Day {
                 name: "Pull".to_string(),
@@ -110,37 +121,70 @@ mod tests {
     fn all_non_reference_weights_initialized() {
         assert_eq!(
             format!("{}", start_gzcl_4day(100).next_workout()[3]),
-            "Face Pull -> 2x15,1x15-25 @ any"
+            "Face Pull -> 2x15,1x15-25 @ 30"
+        );
+        assert_eq!(
+            format!("{}", start_gzcl_4day(100).next_workout()[4]),
+            "Cable Curl -> 2x15,1x15-25 @ 20"
         );
     }
 
     mod incrementing {
         use super::*;
+        use crate::lifting::LiftAttemptResult::Completed;
 
-        fn setup() -> Program {
-            Program {
-                days: vec![
-                    Day {
-                        name: "A".to_string(),
-                        lifts: vec![],
-                    },
-                    Day {
-                        name: "B".to_string(),
-                        lifts: vec![],
-                    },
-                ],
-                reference_weight: 0,
-                name: "".to_string(),
-                weights: Default::default(),
-                current_day: 0,
-            }
+        #[test]
+        #[ignore]
+        fn increments_weights() {
+            let program = start_gzcl_4day(100);
+            assert_eq!(program.weights.len(), 0);
+            program.increment_day(&[
+                Completed {
+                    completed_maximum_reps: true,
+                },
+                Completed {
+                    completed_maximum_reps: true,
+                },
+                Completed {
+                    completed_maximum_reps: true,
+                },
+                Completed {
+                    completed_maximum_reps: true,
+                },
+                Completed {
+                    completed_maximum_reps: true,
+                },
+            ]);
         }
 
         #[test]
-        fn increments_nicely() {
-            assert_eq!(setup().current_day, 0);
-            assert_eq!(setup().increment_day().current_day, 1);
-            assert_eq!(setup().increment_day().increment_day().current_day, 0);
+        fn increments_each_day_and_rolls_over() {
+            assert_eq!(start_gzcl_4day(100).current_day, 0);
+            assert_eq!(start_gzcl_4day(100).increment_day(&[]).current_day, 1);
+            assert_eq!(
+                start_gzcl_4day(100)
+                    .increment_day(&[])
+                    .increment_day(&[])
+                    .current_day,
+                2
+            );
+            assert_eq!(
+                start_gzcl_4day(100)
+                    .increment_day(&[])
+                    .increment_day(&[])
+                    .increment_day(&[])
+                    .current_day,
+                3
+            );
+            assert_eq!(
+                start_gzcl_4day(100)
+                    .increment_day(&[])
+                    .increment_day(&[])
+                    .increment_day(&[])
+                    .increment_day(&[])
+                    .current_day,
+                0
+            );
         }
     }
 }

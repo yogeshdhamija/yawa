@@ -13,8 +13,8 @@ pub fn complete(
     tui_adapter: &impl UserInputAdapter,
 ) -> Result<()> {
     with_program(persistence_adapter, |program| {
-        tui_adapter.check_complete(&program.next_workout());
-        let program1 = program.increment_day();
+        let results = tui_adapter.check_complete(&program.next_workout())?;
+        let program1 = program.increment_day(&results);
         persistence_adapter.persist(&program1)
     })??;
     Ok(())

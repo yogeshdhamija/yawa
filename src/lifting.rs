@@ -1,5 +1,6 @@
 use anyhow::{anyhow, Result};
 use std::fmt::{Display, Formatter};
+use std::hash::{Hash, Hasher};
 use std::time::Duration;
 
 #[derive(Clone, Debug, PartialEq)]
@@ -134,6 +135,14 @@ pub struct Lift {
     pub name: String,
     pub sets: Vec<Set>,
     pub weight: WeightScheme,
+}
+
+impl Eq for Lift {}
+
+impl Hash for Lift {
+    fn hash<H: Hasher>(&self, state: &mut H) {
+        self.to_string().hash(state)
+    }
 }
 
 fn format(sets: &Vec<Set>) -> String {

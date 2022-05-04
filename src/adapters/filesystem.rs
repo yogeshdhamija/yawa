@@ -1,4 +1,4 @@
-use crate::lifting::Day;
+use crate::lifting::{Day, Lift};
 use crate::programs::Program;
 use crate::services::ports::PersistenceAdapter;
 use anyhow::Result;
@@ -35,9 +35,14 @@ impl Program {
             .days_in_notation
             .iter()
             .try_for_each(|it| anyhow::Ok(days.push(Day::parse(it)?)))?;
+        let mut weights = HashMap::new();
+        state.weights.iter().try_for_each(|it| {
+            weights.insert(Lift::parse(it.0)?, *it.1);
+            anyhow::Ok(())
+        })?;
         Ok(Program {
             days,
-            weights: state.weights,
+            weights,
             reference_weight: state.reference_weight,
             name: state.name,
             current_day: state.current_day,
@@ -47,6 +52,10 @@ impl Program {
 
 impl Display for Program {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        let mut weights = HashMap::new();
+        self.weights.iter().for_each(|it| {
+            weights.insert(it.0.to_string(), *it.1);
+        });
         write!(
             f,
             "{}",
@@ -54,7 +63,7 @@ impl Display for Program {
                 name: self.name.clone(),
                 reference_weight: self.reference_weight,
                 days_in_notation: self.days.iter().map(|it| format!("{it}")).collect(),
-                weights: self.weights.clone(),
+                weights,
                 current_day: self.current_day
             })
             .unwrap()
