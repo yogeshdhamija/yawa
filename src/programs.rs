@@ -21,7 +21,24 @@ impl Program {
 
     fn increment_reference(mut self) -> Self {
         if self.current_day == self.days.len() - 1 {
-            self.reference_weight = self.reference_weight + 5;
+            let mut past_attempt_indexes: Vec<(usize, usize)> = Vec::new();
+            self.days.iter().enumerate().for_each(|(day_index, day)| {
+                day.lifts.iter().enumerate().for_each(|(lift_index, lift)| {
+                    if matches!(lift.weight, WeightScheme::BasedOnReference { .. }) {
+                        past_attempt_indexes.push((day_index, lift_index))
+                    }
+                })
+            });
+            if past_attempt_indexes.iter().all(|(day_index, lift_index)| {
+                match self.past_attempt_results[*day_index][*lift_index] {
+                    LiftAttemptResult::Completed {
+                        completed_maximum_reps,
+                    } => completed_maximum_reps,
+                    _ => false,
+                }
+            }) {
+                self.reference_weight = self.reference_weight + 5;
+            }
         }
         self
     }
@@ -244,28 +261,7 @@ mod tests {
             assert_eq!(start_gzcl_4day(100).reference_weight, 100);
             assert_eq!(
                 start_gzcl_4day(100)
-                    .complete_workout(&completed_all)
-                    .reference_weight,
-                100
-            );
-            assert_eq!(
-                start_gzcl_4day(100)
-                    .complete_workout(&completed_all)
-                    .complete_workout(&completed_all)
-                    .reference_weight,
-                100
-            );
-            assert_eq!(
-                start_gzcl_4day(100)
                     .complete_workout(&one_incomplete)
-                    .complete_workout(&completed_all)
-                    .complete_workout(&completed_all)
-                    .reference_weight,
-                100
-            );
-            assert_eq!(
-                start_gzcl_4day(100)
-                    .complete_workout(&completed_all)
                     .complete_workout(&completed_all)
                     .complete_workout(&completed_all)
                     .complete_workout(&completed_all)
