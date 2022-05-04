@@ -15,7 +15,15 @@ impl Program {
     pub fn complete_workout(self, results: &[LiftAttemptResult]) -> Program {
         self.save_results(results)
             .increment_non_reference_weights()
+            .increment_reference()
             .increment_day()
+    }
+
+    fn increment_reference(mut self) -> Self {
+        if self.current_day == self.days.len() - 1 {
+            self.reference_weight = self.reference_weight + 5;
+        }
+        self
     }
 
     fn save_results(mut self, results: &[LiftAttemptResult]) -> Self {
