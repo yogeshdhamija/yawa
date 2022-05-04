@@ -19,6 +19,24 @@ impl Program {
             .increment_day()
     }
 
+    pub fn next_workout(&self) -> Vec<LiftAttempt> {
+        self.days[self.current_day]
+            .lifts
+            .iter()
+            .map(|lift| LiftAttempt {
+                lift: lift.clone(),
+                weight: match lift.weight {
+                    WeightScheme::BasedOnReference { .. } => Some(self.reference_weight),
+                    WeightScheme::Any => None,
+                    WeightScheme::None => None,
+                    WeightScheme::LinearBasedOnPrevious { .. } => {
+                        self.weights.get(lift).map(|it| *it)
+                    }
+                },
+            })
+            .collect()
+    }
+
     fn increment_reference(mut self) -> Self {
         if !self.is_last_day() {
             return self;
@@ -100,24 +118,6 @@ impl Program {
                 }
             });
         self
-    }
-
-    pub fn next_workout(&self) -> Vec<LiftAttempt> {
-        self.days[self.current_day]
-            .lifts
-            .iter()
-            .map(|lift| LiftAttempt {
-                lift: lift.clone(),
-                weight: match lift.weight {
-                    WeightScheme::BasedOnReference { .. } => Some(self.reference_weight),
-                    WeightScheme::Any => None,
-                    WeightScheme::None => None,
-                    WeightScheme::LinearBasedOnPrevious { .. } => {
-                        self.weights.get(lift).map(|it| *it)
-                    }
-                },
-            })
-            .collect()
     }
 }
 
