@@ -245,7 +245,7 @@ pub struct LiftAttempt {
     pub weight: Option<u64>,
 }
 
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Copy, Clone, Debug, PartialEq)]
 pub enum LiftAttemptResult {
     NotCompleted,
     Completed { completed_maximum_reps: bool },

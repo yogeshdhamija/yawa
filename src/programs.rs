@@ -11,7 +11,29 @@ pub struct Program {
 }
 
 impl Program {
-    pub fn increment_day(self, _results: &[LiftAttemptResult]) -> Program {
+    pub fn increment_day(mut self, results: &[LiftAttemptResult]) -> Program {
+        self.days[self.current_day as usize]
+            .lifts
+            .iter()
+            .enumerate()
+            .for_each(|(index, lift)| {
+                if let WeightScheme::LinearBasedOnPrevious { amount_to_increase } = lift.weight {
+                    if results[index]
+                        == (LiftAttemptResult::Completed {
+                            completed_maximum_reps: true,
+                        })
+                    {
+                        self.weights.insert(
+                            lift.clone(),
+                            self.weights
+                                .get(lift)
+                                .map(|it| it + amount_to_increase)
+                                .or(Some(amount_to_increase))
+                                .unwrap(),
+                        );
+                    }
+                }
+            });
         Program {
             current_day: if self.current_day + 1 < self.days.len() as u64 {
                 self.current_day + 1
@@ -137,11 +159,12 @@ mod tests {
         use crate::lifting::LiftAttemptResult::Completed;
 
         #[test]
-        #[ignore]
         fn increments_weights() {
-            let program = start_gzcl_4day(100);
-            assert_eq!(program.weights.len(), 0);
-            program.increment_day(&[
+            let before = start_gzcl_4day(100);
+            let lift = before.days[0].lifts[3].clone();
+            assert_eq!(lift.to_string(), "Face Pull -> 2x15,1x15-25 @ add20");
+            assert_eq!(before.weights[&lift], 30);
+            let after = before.increment_day(&[
                 Completed {
                     completed_maximum_reps: true,
                 },
@@ -155,36 +178,42 @@ mod tests {
                     completed_maximum_reps: true,
                 },
                 Completed {
-                    completed_maximum_reps: true,
+                    completed_maximum_reps: false,
                 },
             ]);
+            assert_eq!(after.weights[&lift], 50);
         }
 
         #[test]
         fn increments_each_day_and_rolls_over() {
             assert_eq!(start_gzcl_4day(100).current_day, 0);
-            assert_eq!(start_gzcl_4day(100).increment_day(&[]).current_day, 1);
             assert_eq!(
                 start_gzcl_4day(100)
-                    .increment_day(&[])
-                    .increment_day(&[])
+                    .increment_day(&[LiftAttemptResult::NotCompleted; 5])
+                    .current_day,
+                1
+            );
+            assert_eq!(
+                start_gzcl_4day(100)
+                    .increment_day(&[LiftAttemptResult::NotCompleted; 5])
+                    .increment_day(&[LiftAttemptResult::NotCompleted; 5])
                     .current_day,
                 2
             );
             assert_eq!(
                 start_gzcl_4day(100)
-                    .increment_day(&[])
-                    .increment_day(&[])
-                    .increment_day(&[])
+                    .increment_day(&[LiftAttemptResult::NotCompleted; 5])
+                    .increment_day(&[LiftAttemptResult::NotCompleted; 5])
+                    .increment_day(&[LiftAttemptResult::NotCompleted; 5])
                     .current_day,
                 3
             );
             assert_eq!(
                 start_gzcl_4day(100)
-                    .increment_day(&[])
-                    .increment_day(&[])
-                    .increment_day(&[])
-                    .increment_day(&[])
+                    .increment_day(&[LiftAttemptResult::NotCompleted; 5])
+                    .increment_day(&[LiftAttemptResult::NotCompleted; 5])
+                    .increment_day(&[LiftAttemptResult::NotCompleted; 5])
+                    .increment_day(&[LiftAttemptResult::NotCompleted; 5])
                     .current_day,
                 0
             );
