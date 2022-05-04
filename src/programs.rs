@@ -161,9 +161,18 @@ mod tests {
         #[test]
         fn increments_weights() {
             let before = start_gzcl_4day(100);
-            let lift = before.days[0].lifts[3].clone();
-            assert_eq!(lift.to_string(), "Face Pull -> 2x15,1x15-25 @ add20");
-            assert_eq!(before.weights[&lift], 30);
+            let lift_incremented = before.days[0].lifts[3].clone();
+            assert_eq!(
+                lift_incremented.to_string(),
+                "Face Pull -> 2x15,1x15-25 @ add20"
+            );
+            let lift_not_incremented = before.days[0].lifts[4].clone();
+            assert_eq!(
+                lift_not_incremented.to_string(),
+                "Cable Curl -> 2x15,1x15-25 @ add20"
+            );
+            assert_eq!(before.weights[&lift_incremented], 30);
+            assert_eq!(before.weights[&lift_not_incremented], 20);
             let after = before.increment_day(&[
                 Completed {
                     completed_maximum_reps: true,
@@ -181,7 +190,8 @@ mod tests {
                     completed_maximum_reps: false,
                 },
             ]);
-            assert_eq!(after.weights[&lift], 50);
+            assert_eq!(after.weights[&lift_incremented], 50);
+            assert_eq!(after.weights[&lift_not_incremented], 20);
         }
 
         #[test]
