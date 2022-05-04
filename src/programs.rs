@@ -11,7 +11,7 @@ pub struct Program {
 }
 
 impl Program {
-    pub fn increment_day(mut self, results: &[LiftAttemptResult]) -> Program {
+    pub fn complete_workout(mut self, results: &[LiftAttemptResult]) -> Program {
         self.days[self.current_day as usize]
             .lifts
             .iter()
@@ -173,7 +173,7 @@ mod tests {
             );
             assert_eq!(before.weights[&lift_incremented], 30);
             assert_eq!(before.weights[&lift_not_incremented], 20);
-            let after = before.increment_day(&[
+            let after = before.complete_workout(&[
                 Completed {
                     completed_maximum_reps: true,
                 },
@@ -199,31 +199,31 @@ mod tests {
             assert_eq!(start_gzcl_4day(100).current_day, 0);
             assert_eq!(
                 start_gzcl_4day(100)
-                    .increment_day(&[LiftAttemptResult::NotCompleted; 5])
+                    .complete_workout(&[LiftAttemptResult::NotCompleted; 5])
                     .current_day,
                 1
             );
             assert_eq!(
                 start_gzcl_4day(100)
-                    .increment_day(&[LiftAttemptResult::NotCompleted; 5])
-                    .increment_day(&[LiftAttemptResult::NotCompleted; 5])
+                    .complete_workout(&[LiftAttemptResult::NotCompleted; 5])
+                    .complete_workout(&[LiftAttemptResult::NotCompleted; 5])
                     .current_day,
                 2
             );
             assert_eq!(
                 start_gzcl_4day(100)
-                    .increment_day(&[LiftAttemptResult::NotCompleted; 5])
-                    .increment_day(&[LiftAttemptResult::NotCompleted; 5])
-                    .increment_day(&[LiftAttemptResult::NotCompleted; 5])
+                    .complete_workout(&[LiftAttemptResult::NotCompleted; 5])
+                    .complete_workout(&[LiftAttemptResult::NotCompleted; 5])
+                    .complete_workout(&[LiftAttemptResult::NotCompleted; 5])
                     .current_day,
                 3
             );
             assert_eq!(
                 start_gzcl_4day(100)
-                    .increment_day(&[LiftAttemptResult::NotCompleted; 5])
-                    .increment_day(&[LiftAttemptResult::NotCompleted; 5])
-                    .increment_day(&[LiftAttemptResult::NotCompleted; 5])
-                    .increment_day(&[LiftAttemptResult::NotCompleted; 5])
+                    .complete_workout(&[LiftAttemptResult::NotCompleted; 5])
+                    .complete_workout(&[LiftAttemptResult::NotCompleted; 5])
+                    .complete_workout(&[LiftAttemptResult::NotCompleted; 5])
+                    .complete_workout(&[LiftAttemptResult::NotCompleted; 5])
                     .current_day,
                 0
             );

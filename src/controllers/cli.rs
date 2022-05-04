@@ -37,29 +37,28 @@ pub fn start_program_with_args(
     let args = Args::parse();
     match &args.command {
         Commands::Status {} => {
-            let program = service::status(persistence_adapter)?;
+            let program = service::get_current_program(persistence_adapter)?;
             println!(
                 "Current program: {}\nCurrent reference weight: {}",
                 program.name, program.reference_weight
             );
         }
         Commands::Start { reference_weight } => {
-            let program = service::new_program(persistence_adapter, *reference_weight)?;
+            let program =
+                service::start_and_save_new_program(persistence_adapter, *reference_weight)?;
             println!("Started program: {}", program.name);
         }
         Commands::Next {} => {
-            let res = service::next_show(persistence_adapter)?;
-            let lifts = res
-                .1
+            let (day_name, lift_attempts) = service::next_workout(persistence_adapter)?;
+            let lifts = lift_attempts
                 .iter()
-                .map(|lift| format!("{lift}"))
+                .map(|lift| lift.to_string())
                 .collect::<Vec<String>>()
                 .join("\n");
-            let string = format!("=== Day: {} ===\n{}", res.0, lifts);
-            println!("{}", string);
+            println!("{}", format!("=== Day: {} ===\n{}", day_name, lifts));
         }
         Commands::Complete {} => {
-            service::complete(persistence_adapter, tui_adapter)?;
+            service::complete_workout(persistence_adapter, tui_adapter)?;
             println!("Well done!");
         }
     }

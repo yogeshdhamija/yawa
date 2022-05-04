@@ -4,23 +4,22 @@ use crate::services::ports::PersistenceAdapter;
 use crate::UserInputAdapter;
 use anyhow::{anyhow, Result};
 
-pub fn status(persistence_adapter: &impl PersistenceAdapter) -> Result<Program> {
+pub fn get_current_program(persistence_adapter: &impl PersistenceAdapter) -> Result<Program> {
     with_program(persistence_adapter, |p| p)
 }
 
-pub fn complete(
+pub fn complete_workout(
     persistence_adapter: &impl PersistenceAdapter,
     tui_adapter: &impl UserInputAdapter,
 ) -> Result<()> {
     with_program(persistence_adapter, |program| {
         let results = tui_adapter.check_complete(&program.next_workout())?;
-        let program1 = program.increment_day(&results);
-        persistence_adapter.persist(&program1)
+        persistence_adapter.persist(&program.complete_workout(&results))
     })??;
     Ok(())
 }
 
-pub fn next_show(
+pub fn next_workout(
     persistence_adapter: &impl PersistenceAdapter,
 ) -> Result<(String, Vec<LiftAttempt>)> {
     with_program(persistence_adapter, |program| {
@@ -35,7 +34,7 @@ fn start_program(r: u64) -> Program {
     start_gzcl_4day(r)
 }
 
-pub fn new_program(
+pub fn start_and_save_new_program(
     persistence_adapter: &impl PersistenceAdapter,
     reference_weight: u64,
 ) -> Result<Program> {
