@@ -323,7 +323,7 @@ pub struct Day {
 impl Day {
     pub fn parse(notation: &str) -> Result<Day> {
         let error = "Cannot parse notation.";
-        let mut lines = notation.split("\n");
+        let mut lines = notation.split(" | ");
         let name = lines.next().ok_or(anyhow!(error))?.trim().to_string();
         let mut lifts = Vec::new();
         lines.try_for_each(|line| {
@@ -342,8 +342,8 @@ impl Display for Day {
             .iter()
             .map(|lift| format!("{lift}"))
             .collect::<Vec<String>>()
-            .join("\n");
-        write!(f, "{}\n{}", self.name, lifts)
+            .join(" | ");
+        write!(f, "{} | {}", self.name, lifts)
     }
 }
 
@@ -401,7 +401,7 @@ mod tests {
                     Lift::parse("Pullup -> 3x5,1x5-6,1x6+").unwrap()
                 ],
             },
-            Day::parse("Day Name\nBench press -> 3x5,1x5-6,1x6+ @ 2r\nPullup -> 3x5,1x5-6,1x6+")
+            Day::parse("Day Name | Bench press -> 3x5,1x5-6,1x6+ @ 2r | Pullup -> 3x5,1x5-6,1x6+")
                 .unwrap()
         );
     }
@@ -419,7 +419,7 @@ mod tests {
                     ],
                 }
             ),
-            "Day Name\nBench press -> 3x5,1x5-6,1x6+ @ 2r\nPullup -> 3x5,1x5-6,1x6+"
+            "Day Name | Bench press -> 3x5,1x5-6,1x6+ @ 2r | Pullup -> 3x5,1x5-6,1x6+"
         );
     }
 
