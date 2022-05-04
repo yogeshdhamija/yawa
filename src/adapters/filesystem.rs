@@ -112,12 +112,10 @@ impl Display for SerializableProgram {
 
 impl PersistenceAdapter for FileSystem {
     fn persist(&self, program: &Program) -> Result<()> {
-        create_dir_all("/tmp/yawa")?;
-        let mut file = File::create("/tmp/yawa/saved.json")?;
-        write!(
-            file,
-            "{}",
-            format!("{}", SerializableProgram::from(program))
+        write_string_to_file(
+            "/tmp/yawa",
+            "saved.json",
+            &format!("{}", SerializableProgram::from(program)),
         )?;
         Ok(())
     }
@@ -127,6 +125,13 @@ impl PersistenceAdapter for FileSystem {
             SerializableProgram::parse(&program_string)?;
         Ok(Program::from(&serializable_program)?)
     }
+}
+
+fn write_string_to_file(directory: &str, file_name: &str, string: &str) -> Result<()> {
+    create_dir_all(directory)?;
+    let mut file = File::create(format!("{}/{}", directory, file_name))?;
+    write!(file, "{}", string)?;
+    Ok(())
 }
 
 fn read_file_to_string(path: &str) -> Result<String> {
@@ -144,8 +149,7 @@ mod tests {
     #[test]
     fn can_create_and_save_program() {
         let program = start_gzcl_4day(100);
-        let serializable_program: SerializableProgram = SerializableProgram::from(&program);
-        let string: String = serializable_program.to_string();
+        let string: String = SerializableProgram::from(&program).to_string();
         let after_round_trip =
             Program::from(&SerializableProgram::parse(&string).unwrap()).unwrap();
         assert_eq!(after_round_trip, program);
