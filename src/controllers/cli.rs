@@ -36,32 +36,46 @@ pub fn start_program_with_args(
 ) -> Result<()> {
     let args = Args::parse();
     match &args.command {
-        Commands::Status {} => {
-            let program = service::get_current_program(persistence_adapter)?;
-            println!(
-                "Current program: {}\nCurrent reference weight: {}",
-                program.name, program.reference_weight
-            );
-        }
-        Commands::Start { reference_weight } => {
-            let program =
-                service::start_and_save_new_program(persistence_adapter, *reference_weight)?;
-            println!("Started program: {}", program.name);
-        }
-        Commands::Next {} => {
-            let (day_name, lift_attempts) = service::next_workout(persistence_adapter)?;
-            let lifts = lift_attempts
-                .iter()
-                .map(|lift| lift.to_string())
-                .collect::<Vec<String>>()
-                .join("\n");
-            println!("{}", format!("=== Day: {} ===\n{}", day_name, lifts));
-        }
-        Commands::Complete {} => {
-            service::complete_workout(persistence_adapter, tui_adapter)?;
-            println!("Well done!");
-        }
-    }
+        Commands::Status {} => status(persistence_adapter)?,
+        Commands::Start { reference_weight } => start(persistence_adapter, reference_weight)?,
+        Commands::Next {} => next(persistence_adapter)?,
+        Commands::Complete {} => complete(persistence_adapter, tui_adapter)?,
+    };
 
+    Ok(())
+}
+
+fn complete(
+    persistence_adapter: &impl PersistenceAdapter,
+    tui_adapter: &impl UserInputAdapter,
+) -> Result<()> {
+    service::complete_workout(persistence_adapter, tui_adapter)?;
+    println!("Well done!");
+    Ok(())
+}
+
+fn next(persistence_adapter: &impl PersistenceAdapter) -> Result<()> {
+    let (day_name, lift_attempts) = service::next_workout(persistence_adapter)?;
+    let lifts = lift_attempts
+        .iter()
+        .map(|lift| lift.to_string())
+        .collect::<Vec<String>>()
+        .join("\n");
+    println!("{}", format!("=== Day: {} ===\n{}", day_name, lifts));
+    Ok(())
+}
+
+fn start(persistence_adapter: &impl PersistenceAdapter, reference_weight: &usize) -> Result<()> {
+    let program = service::start_and_save_new_program(persistence_adapter, *reference_weight)?;
+    println!("Started program: {}", program.name);
+    Ok(())
+}
+
+fn status(persistence_adapter: &impl PersistenceAdapter) -> Result<()> {
+    let program = service::get_current_program(persistence_adapter)?;
+    println!(
+        "Current program: {}\nCurrent reference weight: {}",
+        program.name, program.reference_weight
+    );
     Ok(())
 }
