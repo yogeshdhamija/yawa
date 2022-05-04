@@ -41,59 +41,62 @@ impl Program {
 }
 
 pub fn start_gzcl_4day(reference_weight: u64) -> Program {
+    fn parse(str: &str) -> Lift {
+        Lift::parse(str).unwrap()
+    }
     Program {
         name: "GZCL-based 4-day cycle".to_string(),
         reference_weight,
         weights: HashMap::from([
+            (parse("Face Pull -> 2x15,1x15-25 @ add20"), 30),
+            (parse("Cable Curl -> 2x15,1x15-25 @ add20"), 20),
+            (parse("Tricep Cable Pressdown -> 2x15,1x15-25 @ add20"), 20),
+            (parse("Leg press -> 2x15,1x15-25 @ add30"), 45),
             (
-                Lift::parse("Face Pull -> 2x15,1x15-25 @ add20").unwrap(),
-                30,
-            ),
-            (
-                Lift::parse("Cable Curl -> 2x15,1x15-25 @ add20").unwrap(),
-                20,
+                parse("Standing dumbbell calf raise -> 2x15,1x15-25 @ add20"),
+                45,
             ),
         ]),
         days: vec![
             Day {
                 name: "Pull".to_string(),
                 lifts: vec![
-                    Lift::parse("Weighted Pullup -> 4x3,1x3+ @ 0.5r-30").unwrap(),
-                    Lift::parse("Pullup -> 3x7+").unwrap(),
-                    Lift::parse("Barbell Row -> 3x10 @ 0.65r").unwrap(),
-                    Lift::parse("Face Pull -> 2x15,1x15-25 @ add20").unwrap(),
-                    Lift::parse("Cable Curl -> 2x15,1x15-25 @ add20").unwrap(),
+                    parse("Weighted Pullup -> 4x3,1x3+ @ 0.5r-30"),
+                    parse("Pullup -> 3x7+"),
+                    parse("Barbell Row -> 3x10 @ 0.65r"),
+                    parse("Face Pull -> 2x15,1x15-25 @ add20"),
+                    parse("Cable Curl -> 2x15,1x15-25 @ add20"),
                 ],
             },
             Day {
                 name: "Push".to_string(),
                 lifts: vec![
-                    Lift::parse("Bench press -> 4x3,1x3+ @ 1r").unwrap(),
-                    Lift::parse("Overhead press -> 3x10 @ 0.5r").unwrap(),
-                    Lift::parse("Incline bench press -> 3x10 @ 0.6r").unwrap(),
-                    Lift::parse("Pushup -> 3x15+").unwrap(),
-                    Lift::parse("Tricep Cable Pressdown -> 2x15,1x15-25 @ add20").unwrap(),
+                    parse("Bench press -> 4x3,1x3+ @ 1r"),
+                    parse("Overhead press -> 3x10 @ 0.5r"),
+                    parse("Incline bench press -> 3x10 @ 0.6r"),
+                    parse("Pushup -> 3x15+"),
+                    parse("Tricep Cable Pressdown -> 2x15,1x15-25 @ add20"),
                 ],
             },
             Day {
                 name: "Legs".to_string(),
                 lifts: vec![
-                    Lift::parse("Squat -> 4x3,1x3+ @ 1.35r").unwrap(),
-                    Lift::parse("Deadlift -> 3x8 @ 1.25r").unwrap(),
-                    Lift::parse("Romanian Deadlift -> 3x10 @ 0.675r").unwrap(),
-                    Lift::parse("Leg press -> 2x15,1x15-25 @ add30").unwrap(),
-                    Lift::parse("Standing dumbbell calf raise -> 2x15,1x15-25 @ add20").unwrap(),
+                    parse("Squat -> 4x3,1x3+ @ 1.35r"),
+                    parse("Deadlift -> 3x8 @ 1.25r"),
+                    parse("Romanian Deadlift -> 3x10 @ 0.675r"),
+                    parse("Leg press -> 2x15,1x15-25 @ add30"),
+                    parse("Standing dumbbell calf raise -> 2x15,1x15-25 @ add20"),
                 ],
             },
             Day {
                 name: "Core".to_string(),
                 lifts: vec![
-                    Lift::parse("Plank -> 1x30s @ any").unwrap(),
-                    Lift::parse("Ab Rollout -> 3xAny").unwrap(),
-                    Lift::parse("Cable Core Press -> 3xAny @ any").unwrap(),
-                    Lift::parse("Bent-knee reverse hyperextension -> 3xAny @ any").unwrap(),
-                    Lift::parse("Knee raises -> 3xAny").unwrap(),
-                    Lift::parse("Leg extensions -> 3xAny @ any").unwrap(),
+                    parse("Plank -> 1x30s @ any"),
+                    parse("Ab Rollout -> 3xAny"),
+                    parse("Cable Core Press -> 3xAny @ any"),
+                    parse("Bent-knee reverse hyperextension -> 3xAny @ any"),
+                    parse("Knee raises -> 3xAny"),
+                    parse("Leg extensions -> 3xAny @ any"),
                 ],
             },
         ],
