@@ -266,7 +266,7 @@ impl Display for LiftAttemptResult {
 }
 
 impl LiftAttemptResult {
-    fn parse(notation: &str) -> Result<Self> {
+    pub fn parse(notation: &str) -> Result<Self> {
         match notation {
             "NotCompleted" => Ok(LiftAttemptResult::NotCompleted),
             "Completed" => Ok(LiftAttemptResult::Completed {

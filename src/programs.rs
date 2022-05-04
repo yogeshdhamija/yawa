@@ -12,21 +12,21 @@ pub struct Program {
 }
 
 impl Program {
-    pub fn complete_workout(mut self, results: &[LiftAttemptResult]) -> Program {
-        self.increment_non_reference_weights(results);
-        self.increment_day();
-        self
+    pub fn complete_workout(self, results: &[LiftAttemptResult]) -> Program {
+        self.increment_non_reference_weights(results)
+            .increment_day()
     }
 
-    fn increment_day(&mut self) {
+    fn increment_day(mut self) -> Self {
         self.current_day = if self.current_day + 1 < self.days.len() as u64 {
             self.current_day + 1
         } else {
             0
         };
+        self
     }
 
-    fn increment_non_reference_weights(&mut self, results: &[LiftAttemptResult]) {
+    fn increment_non_reference_weights(mut self, results: &[LiftAttemptResult]) -> Self {
         self.days[self.current_day as usize]
             .lifts
             .iter()
@@ -49,6 +49,7 @@ impl Program {
                     }
                 }
             });
+        self
     }
 
     pub fn next_workout(&self) -> Vec<LiftAttempt> {

@@ -1,4 +1,4 @@
-use crate::lifting::{Day, Lift};
+use crate::lifting::{Day, Lift, LiftAttemptResult};
 use crate::programs::Program;
 use crate::services::ports::PersistenceAdapter;
 use anyhow::Result;
@@ -41,13 +41,25 @@ impl Program {
             weights.insert(Lift::parse(it.0)?, *it.1);
             anyhow::Ok(())
         })?;
+        let mut past_attempts: Vec<Vec<LiftAttemptResult>> = Vec::new();
+        state
+            .past_attempt_results_in_notation
+            .iter()
+            .try_for_each(|day| {
+                let mut attempts: Vec<LiftAttemptResult> = Vec::new();
+                day.iter().try_for_each(|attempt_notation| {
+                    anyhow::Ok(attempts.push(LiftAttemptResult::parse(attempt_notation)?))
+                })?;
+                past_attempts.push(attempts);
+                anyhow::Ok(())
+            })?;
         Ok(Program {
             days,
             weights,
             reference_weight: state.reference_weight,
             name: state.name,
             current_day: state.current_day,
-            past_attempt_results: vec![],
+            past_attempt_results: past_attempts,
         })
     }
 }
@@ -67,7 +79,11 @@ impl Display for Program {
                 days_in_notation: self.days.iter().map(|it| format!("{it}")).collect(),
                 weights,
                 current_day: self.current_day,
-                past_attempt_results_in_notation: vec![]
+                past_attempt_results_in_notation: self
+                    .past_attempt_results
+                    .iter()
+                    .map(|day| day.iter().map(|it| it.to_string()).collect())
+                    .collect()
             })
             .unwrap()
         )
