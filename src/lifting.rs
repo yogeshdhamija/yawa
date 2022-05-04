@@ -343,7 +343,7 @@ impl Display for Day {
             .map(|lift| format!("{lift}"))
             .collect::<Vec<String>>()
             .join("\n");
-        write!(f, "{}\n{}\n\n", self.name, lifts)
+        write!(f, "{}\n{}", self.name, lifts)
     }
 }
 
@@ -401,10 +401,8 @@ mod tests {
                     Lift::parse("Pullup -> 3x5,1x5-6,1x6+").unwrap()
                 ],
             },
-            Day::parse(
-                "Day Name\nBench press -> 3x5,1x5-6,1x6+ @ 2r\nPullup -> 3x5,1x5-6,1x6+\n\n"
-            )
-            .unwrap()
+            Day::parse("Day Name\nBench press -> 3x5,1x5-6,1x6+ @ 2r\nPullup -> 3x5,1x5-6,1x6+")
+                .unwrap()
         );
     }
 
@@ -421,7 +419,7 @@ mod tests {
                     ],
                 }
             ),
-            "Day Name\nBench press -> 3x5,1x5-6,1x6+ @ 2r\nPullup -> 3x5,1x5-6,1x6+\n\n"
+            "Day Name\nBench press -> 3x5,1x5-6,1x6+ @ 2r\nPullup -> 3x5,1x5-6,1x6+"
         );
     }
 
