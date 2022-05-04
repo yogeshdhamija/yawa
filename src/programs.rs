@@ -311,31 +311,31 @@ mod tests {
             assert_eq!(start_gzcl_4day(100).current_day, 0);
             assert_eq!(
                 start_gzcl_4day(100)
-                    .complete_workout(&[LiftAttemptResult::NotCompleted; 5])
+                    .complete_workout(&[NotCompleted; 5])
                     .current_day,
                 1
             );
             assert_eq!(
                 start_gzcl_4day(100)
-                    .complete_workout(&[LiftAttemptResult::NotCompleted; 5])
-                    .complete_workout(&[LiftAttemptResult::NotCompleted; 5])
+                    .complete_workout(&[NotCompleted; 5])
+                    .complete_workout(&[NotCompleted; 5])
                     .current_day,
                 2
             );
             assert_eq!(
                 start_gzcl_4day(100)
-                    .complete_workout(&[LiftAttemptResult::NotCompleted; 5])
-                    .complete_workout(&[LiftAttemptResult::NotCompleted; 5])
-                    .complete_workout(&[LiftAttemptResult::NotCompleted; 5])
+                    .complete_workout(&[NotCompleted; 5])
+                    .complete_workout(&[NotCompleted; 5])
+                    .complete_workout(&[NotCompleted; 5])
                     .current_day,
                 3
             );
             assert_eq!(
                 start_gzcl_4day(100)
-                    .complete_workout(&[LiftAttemptResult::NotCompleted; 5])
-                    .complete_workout(&[LiftAttemptResult::NotCompleted; 5])
-                    .complete_workout(&[LiftAttemptResult::NotCompleted; 5])
-                    .complete_workout(&[LiftAttemptResult::NotCompleted; 5])
+                    .complete_workout(&[NotCompleted; 5])
+                    .complete_workout(&[NotCompleted; 5])
+                    .complete_workout(&[NotCompleted; 5])
+                    .complete_workout(&[NotCompleted; 5])
                     .current_day,
                 0
             );
