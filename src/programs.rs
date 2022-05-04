@@ -22,7 +22,7 @@ impl Program {
         }
     }
     pub fn next_workout(&self) -> Vec<LiftAttempt> {
-        let day = self.days.first().unwrap();
+        let day = &self.days[self.current_day as usize];
         day.lifts
             .iter()
             .map(|lift| LiftAttempt {
