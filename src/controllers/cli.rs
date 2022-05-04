@@ -1,3 +1,4 @@
+use crate::lifting::LiftAttempt;
 use crate::services::ports::{PersistenceAdapter, UserInputAdapter};
 use crate::services::service;
 use anyhow::Result;
@@ -56,13 +57,20 @@ fn complete(
 
 fn next(persistence_adapter: &impl PersistenceAdapter) -> Result<()> {
     let (day_name, lift_attempts) = service::next_workout(persistence_adapter)?;
+    println!(
+        "{}",
+        format!("=== Day: {} ===\n{}", day_name, to_string(&lift_attempts))
+    );
+    Ok(())
+}
+
+fn to_string(lift_attempts: &Vec<LiftAttempt>) -> String {
     let lifts = lift_attempts
         .iter()
         .map(|lift| lift.to_string())
         .collect::<Vec<String>>()
         .join("\n");
-    println!("{}", format!("=== Day: {} ===\n{}", day_name, lifts));
-    Ok(())
+    lifts
 }
 
 fn start(persistence_adapter: &impl PersistenceAdapter, reference_weight: &usize) -> Result<()> {
