@@ -2,7 +2,7 @@ use crate::lifting::{LiftAttempt, LiftAttemptResult, Set};
 use crate::services::ports::UserInputAdapter;
 use anyhow::Result;
 use std::io;
-use std::io::{Read, Write};
+use std::io::Write;
 
 pub struct Tui {}
 pub fn new() -> Tui {

@@ -3,8 +3,6 @@
 //! Program based on the GZCL method.  
 //! Relative weights from SymmetricStrength.com.  
 
-use crate::adapters::filesystem::FileSystem;
-use crate::adapters::tui::Tui;
 use crate::services::ports::{PersistenceAdapter, UserInputAdapter};
 use anyhow::Result;
 
