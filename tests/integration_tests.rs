@@ -65,7 +65,7 @@ fn completes_workout() {
         .failure()
         .stderr(contains("Start a lifting first!"));
     run_and_assert("start -r 100");
-    run_and_assert("complete")
+    run_and_assert_with_stdin("complete", "n\nn\nn\nn\nn\n")
         .success()
         .stdout(contains("Well done!"));
     run_and_assert("next")
@@ -96,8 +96,12 @@ fn fresh_run_and_assert(args_to_run_with: &str) -> assert_cmd::assert::Assert {
 }
 
 fn run_and_assert(args_to_run_with: &str) -> assert_cmd::assert::Assert {
+    run_and_assert_with_stdin(args_to_run_with, "")
+}
+fn run_and_assert_with_stdin(args_to_run_with: &str, std_in: &str) -> assert_cmd::assert::Assert {
     Command::cargo_bin(crate_name!())
         .unwrap()
         .args(args_to_run_with.split_whitespace())
+        .write_stdin(std_in)
         .assert()
 }
