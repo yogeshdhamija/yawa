@@ -20,43 +20,59 @@ impl Program {
     }
 
     fn increment_reference(mut self) -> Self {
-        if self.current_day == self.days.len() - 1 {
-            let mut past_attempt_indexes: Vec<(usize, usize)> = Vec::new();
-            self.days.iter().enumerate().for_each(|(day_index, day)| {
-                day.lifts.iter().enumerate().for_each(|(lift_index, lift)| {
-                    if matches!(lift.weight, WeightScheme::BasedOnReference { .. }) {
-                        past_attempt_indexes.push((day_index, lift_index))
-                    }
-                })
-            });
-            if past_attempt_indexes.iter().all(|(day_index, lift_index)| {
-                match self.past_attempt_results[*day_index][*lift_index] {
-                    LiftAttemptResult::Completed {
-                        completed_maximum_reps,
-                    } => completed_maximum_reps,
-                    _ => false,
-                }
-            }) {
-                self.reference_weight = self.reference_weight + 5;
-            }
+        if !self.is_last_day() {
+            return self;
+        }
+        if self.are_all_completed(self.indexes_of_past_attempts_that_are_reference_lifts()) {
+            self.reference_weight = self.reference_weight + 5;
         }
         self
     }
 
+    fn are_all_completed(&self, past_attempt_indexes: Vec<(usize, usize)>) -> bool {
+        past_attempt_indexes.iter().all(|(day_index, lift_index)| {
+            match self.past_attempt_results[*day_index][*lift_index] {
+                LiftAttemptResult::Completed {
+                    completed_maximum_reps,
+                } => completed_maximum_reps,
+                _ => false,
+            }
+        })
+    }
+
+    fn indexes_of_past_attempts_that_are_reference_lifts(&self) -> Vec<(usize, usize)> {
+        let mut past_attempt_indexes: Vec<(usize, usize)> = Vec::new();
+        self.days.iter().enumerate().for_each(|(day_index, day)| {
+            day.lifts.iter().enumerate().for_each(|(lift_index, lift)| {
+                if matches!(lift.weight, WeightScheme::BasedOnReference { .. }) {
+                    past_attempt_indexes.push((day_index, lift_index))
+                }
+            })
+        });
+        past_attempt_indexes
+    }
+
+    fn is_last_day(&self) -> bool {
+        self.current_day == self.days.len() - 1
+    }
+
     fn save_results(mut self, results: &[LiftAttemptResult]) -> Self {
-        while self.past_attempt_results.len() <= self.current_day {
-            self.past_attempt_results.push(Vec::new());
-        }
+        self.ensure_past_attempts_match_day_length();
         self.past_attempt_results[self.current_day] = Vec::from(results);
         self
     }
 
+    fn ensure_past_attempts_match_day_length(&mut self) {
+        while self.past_attempt_results.len() <= self.current_day {
+            self.past_attempt_results.push(Vec::new());
+        }
+    }
+
     fn increment_day(mut self) -> Self {
-        self.current_day = if self.current_day + 1 < self.days.len() {
-            self.current_day + 1
-        } else {
-            0
-        };
+        self.current_day += 1;
+        if self.current_day >= self.days.len() {
+            self.current_day = 0;
+        }
         self
     }
 
@@ -87,8 +103,8 @@ impl Program {
     }
 
     pub fn next_workout(&self) -> Vec<LiftAttempt> {
-        let day = &self.days[self.current_day];
-        day.lifts
+        self.days[self.current_day]
+            .lifts
             .iter()
             .map(|lift| LiftAttempt {
                 lift: lift.clone(),
