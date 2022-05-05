@@ -6,10 +6,11 @@ pub struct Program {
     pub days: Vec<Day>,
     pub reference_weight: usize,
     pub starting_reference_weight: usize,
+    pub workouts_completed: usize,
     pub name: String,
     pub weights: HashMap<Lift, usize>,
     pub current_day: usize,
-    pub past_attempt_results: Vec<Vec<LiftAttemptResult>>,
+    pub current_cycle_attempt_results: Vec<Vec<LiftAttemptResult>>,
 }
 
 impl Program {
@@ -17,6 +18,7 @@ impl Program {
         self.save_results(results)
             .increment_non_reference_weights()
             .increment_reference()
+            .increment_count()
             .increment_day()
     }
 
@@ -50,7 +52,7 @@ impl Program {
 
     fn are_all_completed(&self, past_attempt_indexes: Vec<(usize, usize)>) -> bool {
         past_attempt_indexes.iter().all(|(day_index, lift_index)| {
-            match self.past_attempt_results[*day_index][*lift_index] {
+            match self.current_cycle_attempt_results[*day_index][*lift_index] {
                 LiftAttemptResult::Completed {
                     completed_maximum_reps,
                 } => completed_maximum_reps,
@@ -77,13 +79,13 @@ impl Program {
 
     fn save_results(mut self, results: &[LiftAttemptResult]) -> Self {
         self.ensure_past_attempts_match_day_length();
-        self.past_attempt_results[self.current_day] = Vec::from(results);
+        self.current_cycle_attempt_results[self.current_day] = Vec::from(results);
         self
     }
 
     fn ensure_past_attempts_match_day_length(&mut self) {
-        while self.past_attempt_results.len() <= self.current_day {
-            self.past_attempt_results.push(Vec::new());
+        while self.current_cycle_attempt_results.len() <= self.current_day {
+            self.current_cycle_attempt_results.push(Vec::new());
         }
     }
 
@@ -102,7 +104,7 @@ impl Program {
             .enumerate()
             .for_each(|(index, lift)| {
                 if let WeightScheme::LinearBasedOnPrevious { amount_to_increase } = lift.weight {
-                    if self.past_attempt_results[self.current_day][index]
+                    if self.current_cycle_attempt_results[self.current_day][index]
                         == (LiftAttemptResult::Completed {
                             completed_maximum_reps: true,
                         })
@@ -118,6 +120,10 @@ impl Program {
                     }
                 }
             });
+        self
+    }
+    fn increment_count(mut self) -> Self {
+        self.workouts_completed += 1;
         self
     }
 }
@@ -184,7 +190,8 @@ pub fn start_gzcl_4day(reference_weight: usize) -> Program {
             },
         ],
         current_day: 0,
-        past_attempt_results: vec![],
+        current_cycle_attempt_results: vec![],
+        workouts_completed: 0,
     }
 }
 
@@ -312,36 +319,20 @@ mod tests {
         #[test]
         fn increments_each_day_and_rolls_over() {
             assert_eq!(start_gzcl_4day(100).current_day, 0);
-            assert_eq!(
-                start_gzcl_4day(100)
-                    .complete_workout(&[NotCompleted; 5])
-                    .current_day,
-                1
-            );
-            assert_eq!(
-                start_gzcl_4day(100)
-                    .complete_workout(&[NotCompleted; 5])
-                    .complete_workout(&[NotCompleted; 5])
-                    .current_day,
-                2
-            );
-            assert_eq!(
-                start_gzcl_4day(100)
-                    .complete_workout(&[NotCompleted; 5])
-                    .complete_workout(&[NotCompleted; 5])
-                    .complete_workout(&[NotCompleted; 5])
-                    .current_day,
-                3
-            );
-            assert_eq!(
-                start_gzcl_4day(100)
-                    .complete_workout(&[NotCompleted; 5])
-                    .complete_workout(&[NotCompleted; 5])
-                    .complete_workout(&[NotCompleted; 5])
-                    .complete_workout(&[NotCompleted; 5])
-                    .current_day,
-                0
-            );
+
+            let before_completing_cycle = start_gzcl_4day(100)
+                .complete_workout(&[NotCompleted; 5])
+                .complete_workout(&[NotCompleted; 5]);
+            assert_eq!(before_completing_cycle.current_day, 2);
+            assert_eq!(before_completing_cycle.workouts_completed, 2);
+
+            let after_completing_cycle = start_gzcl_4day(100)
+                .complete_workout(&[NotCompleted; 5])
+                .complete_workout(&[NotCompleted; 5])
+                .complete_workout(&[NotCompleted; 5])
+                .complete_workout(&[NotCompleted; 5]);
+            assert_eq!(after_completing_cycle.current_day, 0);
+            assert_eq!(after_completing_cycle.workouts_completed, 4);
         }
     }
 }

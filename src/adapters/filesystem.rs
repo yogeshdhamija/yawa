@@ -21,6 +21,7 @@ pub fn new() -> FileSystem {
 #[derive(Serialize, Deserialize)]
 struct SerializableProgram {
     name: String,
+    workouts_completed: usize,
     reference_weight: usize,
     starting_reference_weight: usize,
     days_in_notation: Vec<String>,
@@ -37,13 +38,14 @@ impl SerializableProgram {
         });
         SerializableProgram {
             name: program.name.clone(),
+            workouts_completed: program.workouts_completed,
             reference_weight: program.reference_weight,
             starting_reference_weight: program.starting_reference_weight,
             days_in_notation: program.days.iter().map(|it| format!("{it}")).collect(),
             weights,
             current_day: program.current_day,
             past_attempt_results_in_notation: program
-                .past_attempt_results
+                .current_cycle_attempt_results
                 .iter()
                 .map(|day| day.iter().map(|it| it.to_string()).collect())
                 .collect(),
@@ -64,9 +66,10 @@ impl Program {
             weights,
             reference_weight: serializable_program.reference_weight,
             starting_reference_weight: serializable_program.starting_reference_weight,
+            workouts_completed: serializable_program.workouts_completed,
             name: serializable_program.name.clone(),
             current_day: serializable_program.current_day,
-            past_attempt_results: past_attempts,
+            current_cycle_attempt_results: past_attempts,
         })
     }
 
