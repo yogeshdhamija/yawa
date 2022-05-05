@@ -50,7 +50,9 @@ fn starts_program() {
     run_and_assert("status")
         .success()
         .stdout(contains("Current program: GZCL-based 4-day cycle\n"))
-        .stdout(contains("Current reference weight: 105\n"));
+        .stdout(contains("Current reference weight: 105\n"))
+        .stdout(contains("Starting reference weight: 105\n"));
+    // .stdout(contains("Workouts completed: 0\n"));
 }
 
 fn starting_program_needs_reference_weight() {

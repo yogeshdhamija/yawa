@@ -22,6 +22,7 @@ pub fn new() -> FileSystem {
 struct SerializableProgram {
     name: String,
     reference_weight: usize,
+    starting_reference_weight: usize,
     days_in_notation: Vec<String>,
     weights: HashMap<String, usize>,
     current_day: usize,
@@ -37,6 +38,7 @@ impl SerializableProgram {
         SerializableProgram {
             name: program.name.clone(),
             reference_weight: program.reference_weight,
+            starting_reference_weight: program.starting_reference_weight,
             days_in_notation: program.days.iter().map(|it| format!("{it}")).collect(),
             weights,
             current_day: program.current_day,
@@ -61,6 +63,7 @@ impl Program {
             days,
             weights,
             reference_weight: serializable_program.reference_weight,
+            starting_reference_weight: serializable_program.starting_reference_weight,
             name: serializable_program.name.clone(),
             current_day: serializable_program.current_day,
             past_attempt_results: past_attempts,

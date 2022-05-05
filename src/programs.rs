@@ -5,6 +5,7 @@ use std::collections::HashMap;
 pub struct Program {
     pub days: Vec<Day>,
     pub reference_weight: usize,
+    pub starting_reference_weight: usize,
     pub name: String,
     pub weights: HashMap<Lift, usize>,
     pub current_day: usize,
@@ -128,6 +129,7 @@ pub fn start_gzcl_4day(reference_weight: usize) -> Program {
     Program {
         name: "GZCL-based 4-day cycle".to_string(),
         reference_weight,
+        starting_reference_weight: reference_weight,
         weights: HashMap::from([
             (parse("Face Pull -> 2x15,1x15-25 @ add20"), 30),
             (parse("Cable Curl -> 2x15,1x15-25 @ add20"), 20),
@@ -287,40 +289,25 @@ mod tests {
         }
         #[test]
         fn increments_reference_weight_if_all_completed() {
-            let completed_all = [Completed {
+            assert_eq!(start_gzcl_4day(100).reference_weight, 100);
+            assert_eq!(start_gzcl_4day(100).starting_reference_weight, 100);
+            let all_lifts_completed = [Completed {
                 completed_maximum_reps: true,
             }; 5];
-            assert_eq!(start_gzcl_4day(100).reference_weight, 100);
-            assert_eq!(
-                start_gzcl_4day(100)
-                    .complete_workout(&completed_all)
-                    .reference_weight,
-                100
-            );
-            assert_eq!(
-                start_gzcl_4day(100)
-                    .complete_workout(&completed_all)
-                    .complete_workout(&completed_all)
-                    .reference_weight,
-                100
-            );
-            assert_eq!(
-                start_gzcl_4day(100)
-                    .complete_workout(&completed_all)
-                    .complete_workout(&completed_all)
-                    .complete_workout(&completed_all)
-                    .reference_weight,
-                100
-            );
-            assert_eq!(
-                start_gzcl_4day(100)
-                    .complete_workout(&completed_all)
-                    .complete_workout(&completed_all)
-                    .complete_workout(&completed_all)
-                    .complete_workout(&completed_all)
-                    .reference_weight,
-                105
-            );
+
+            let before_cycle_completed = start_gzcl_4day(100)
+                .complete_workout(&all_lifts_completed)
+                .complete_workout(&all_lifts_completed)
+                .complete_workout(&all_lifts_completed);
+            assert_eq!(before_cycle_completed.reference_weight, 100);
+
+            let after_cycle_completed = start_gzcl_4day(100)
+                .complete_workout(&all_lifts_completed)
+                .complete_workout(&all_lifts_completed)
+                .complete_workout(&all_lifts_completed)
+                .complete_workout(&all_lifts_completed);
+            assert_eq!(after_cycle_completed.reference_weight, 105);
+            assert_eq!(after_cycle_completed.starting_reference_weight, 100);
         }
         #[test]
         fn increments_each_day_and_rolls_over() {
