@@ -7,6 +7,7 @@ use serde::Serialize;
 use serde_json::from_str;
 use serde_json::to_string_pretty;
 use std::collections::HashMap;
+use std::env::current_dir;
 use std::fmt::{Display, Formatter};
 use std::fs::create_dir_all;
 use std::fs::File;
@@ -119,14 +120,15 @@ impl Display for SerializableProgram {
 impl PersistenceAdapter for FileSystem {
     fn persist(&self, program: &Program) -> Result<()> {
         write_string_to_file(
-            "/tmp/yawa",
+            &current_dir().unwrap().display().to_string(),
             "saved.json",
             &format!("{}", SerializableProgram::from(program)),
         )?;
         Ok(())
     }
     fn summon(&self) -> Result<Program> {
-        let program_string = read_file_to_string("/tmp/yawa/saved.json")?;
+        let program_string =
+            read_file_to_string(&current_dir().unwrap().display().to_string(), "saved.json")?;
         let serializable_program: SerializableProgram =
             SerializableProgram::parse(&program_string)?;
         Ok(Program::from(&serializable_program)?)
@@ -140,8 +142,8 @@ fn write_string_to_file(directory: &str, file_name: &str, string: &str) -> Resul
     Ok(())
 }
 
-fn read_file_to_string(path: &str) -> Result<String> {
-    let mut file = File::open(path)?;
+fn read_file_to_string(directory: &str, file_name: &str) -> Result<String> {
+    let mut file = File::open(format!("{}/{}", directory, file_name))?;
     let mut program_string = String::new();
     file.read_to_string(&mut program_string)?;
     Ok(program_string)
