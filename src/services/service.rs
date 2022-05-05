@@ -11,10 +11,10 @@ fn not_started_error() -> Result<Program, Error> {
 
 pub fn complete_workout(
     persistence_adapter: &impl PersistenceAdapter,
-    tui_adapter: &impl UserInputAdapter,
+    user_input_adapter: &impl UserInputAdapter,
 ) -> Result<()> {
     let program = get_program(persistence_adapter)?;
-    let results = tui_adapter.check_complete(&program.next_workout())?;
+    let results = user_input_adapter.check_complete(&program.next_workout())?;
     persistence_adapter.persist(&program.complete_workout(&results))?;
     Ok(())
 }

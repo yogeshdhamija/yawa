@@ -33,23 +33,23 @@ enum Commands {
 
 pub fn execute_based_on_args(
     persistence_adapter: &impl PersistenceAdapter,
-    tui_adapter: &impl UserInputAdapter,
+    user_input_adapter: &impl UserInputAdapter,
 ) -> Result<()> {
     let args = Args::parse();
     match &args.command {
         Commands::Status {} => status(persistence_adapter)?,
         Commands::Start { reference_weight } => start(persistence_adapter, reference_weight)?,
         Commands::Next {} => next(persistence_adapter)?,
-        Commands::Complete {} => complete(persistence_adapter, tui_adapter)?,
+        Commands::Complete {} => complete(persistence_adapter, user_input_adapter)?,
     };
     Ok(())
 }
 
 fn complete(
     persistence_adapter: &impl PersistenceAdapter,
-    tui_adapter: &impl UserInputAdapter,
+    user_input_adapter: &impl UserInputAdapter,
 ) -> Result<()> {
-    service::complete_workout(persistence_adapter, tui_adapter)?;
+    service::complete_workout(persistence_adapter, user_input_adapter)?;
     println!("Well done!");
     Ok(())
 }
