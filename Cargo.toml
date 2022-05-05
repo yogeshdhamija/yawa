@@ -13,4 +13,5 @@ serde_json = "*"                                # Used by the filesystem adapter
 
 [dev-dependencies]
 assert_cmd = "*"
-predicates = "2.0.3"
+predicates = "*"
+rand = "*"
