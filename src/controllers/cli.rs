@@ -31,7 +31,7 @@ enum Commands {
     Complete {},
 }
 
-pub fn start_program_with_args(
+pub fn execute_based_on_args(
     persistence_adapter: &impl PersistenceAdapter,
     tui_adapter: &impl UserInputAdapter,
 ) -> Result<()> {
@@ -42,7 +42,6 @@ pub fn start_program_with_args(
         Commands::Next {} => next(persistence_adapter)?,
         Commands::Complete {} => complete(persistence_adapter, tui_adapter)?,
     };
-
     Ok(())
 }
 

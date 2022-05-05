@@ -15,7 +15,7 @@ mod programs;
 
 fn main() -> Result<()> {
     let (file_system_adapter, tui_adapter) = initialize_dependencies();
-    controllers::cli::start_program_with_args(&file_system_adapter, &tui_adapter)?;
+    controllers::cli::execute_based_on_args(&file_system_adapter, &tui_adapter)?;
     Ok(())
 }
 
