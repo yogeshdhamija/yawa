@@ -35,10 +35,11 @@ impl Display for WeightScheme {
 impl WeightScheme {
     /// notation options:
     /// ```
-    /// parse("any")
-    /// parse("3.14r+12")
-    /// parse("3.14r-12")
-    /// parse("add10")
+    /// use yawa::lifting::WeightScheme;
+    /// WeightScheme::parse("any").unwrap();
+    /// WeightScheme::parse("3.14r+12").unwrap();
+    /// WeightScheme::parse("3.14r-12").unwrap();
+    /// WeightScheme::parse("add10").unwrap();
     /// ```
     pub fn parse(notation: &str) -> Result<Self> {
         let error = "Invalid notation";
@@ -97,11 +98,12 @@ impl Display for Set {
 impl Set {
     /// notation options:
     /// ```
-    /// parse("8-12")
-    /// parse("3+")
-    /// parse("Any")
-    /// parse("10")
-    /// parse("5s")
+    /// use yawa::lifting::Set;
+    /// Set::parse("8-12").unwrap();
+    /// Set::parse("3+").unwrap();
+    /// Set::parse("Any").unwrap();
+    /// Set::parse("10").unwrap();
+    /// Set::parse("5s").unwrap();
     /// ```
     pub fn parse(notation: &str) -> Result<Self> {
         let error = "Invalid notation";
@@ -187,14 +189,16 @@ impl Display for Lift {
 impl Lift {
     /// notation options:
     /// ```
-    /// parse("name -> 3xReps,1xReps @ weight")
+    /// use yawa::lifting::Lift;
+    /// Lift::parse("name -> 3xReps,1xReps @ weight").is_err();
     /// ```
     /// See Set::parse() and WeightScheme::parse() to
     /// see how the `Reps` and `weight` portion above
     /// should be structured.  
     /// Example:
     /// ```
-    /// parse("Barbell bench press -> 3x5,1x5-6,1x6+ @ 0.8r-10")
+    /// use yawa::lifting::Lift;
+    /// Lift::parse("Barbell bench press -> 3x5,1x5-6,1x6+ @ 0.8r-10").unwrap();
     /// ```
     pub fn parse(notation: &str) -> Result<Self> {
         let error = "Cannot parse notation";

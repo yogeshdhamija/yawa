@@ -3,15 +3,9 @@
 //! Program based on the GZCL method.  
 //! Relative weights from SymmetricStrength.com.  
 
-use crate::services::ports::{PersistenceAdapter, UserInputAdapter};
 use anyhow::Result;
-
-mod adapters;
-mod controllers;
-mod services;
-
-mod lifting;
-mod programs;
+use yawa::services::ports::{PersistenceAdapter, UserInputAdapter};
+use yawa::{adapters, controllers};
 
 fn main() -> Result<()> {
     let (file_system_adapter, tui_adapter) = initialize_dependencies();

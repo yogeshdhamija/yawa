@@ -1,7 +1,6 @@
 use crate::lifting::LiftAttempt;
 use crate::programs::{start_gzcl_4day, Program};
-use crate::services::ports::PersistenceAdapter;
-use crate::UserInputAdapter;
+use crate::services::ports::{PersistenceAdapter, UserInputAdapter};
 use anyhow::{anyhow, Error, Result};
 
 const LIFTING_PROGRAM_NOT_STARTED_ERROR_MESSAGE: &'static str = "Start a lifting program first!";
