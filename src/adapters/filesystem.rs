@@ -15,6 +15,9 @@ use std::io::Read;
 use std::io::Write;
 use std::path::{Path, PathBuf};
 
+const PROGRAM_SAVE_FILE_NAME: &'static str = "program.json";
+const SAVE_DIRECTORY_NAME: &'static str = "yawa_save_data";
+
 pub struct FileSystem {
     save_dir: PathBuf,
 }
@@ -22,7 +25,7 @@ pub fn new() -> Result<FileSystem> {
     Ok(FileSystem {
         save_dir: {
             let mut dir = current_dir()?;
-            dir.push(&Path::new("yawa_save_data"));
+            dir.push(&Path::new(SAVE_DIRECTORY_NAME));
             dir
         },
     })
@@ -131,7 +134,7 @@ impl PersistenceAdapter for FileSystem {
         FileSystem {
             save_dir: {
                 let mut new_dir = dir.to_path_buf().clone();
-                new_dir.push(&Path::new("yawa_save_data"));
+                new_dir.push(&Path::new(SAVE_DIRECTORY_NAME));
                 new_dir
             },
         }
@@ -140,14 +143,14 @@ impl PersistenceAdapter for FileSystem {
     fn persist(&self, program: &Program) -> Result<()> {
         write_string_to_file(
             &self.save_dir.display().to_string(),
-            "saved.json",
+            PROGRAM_SAVE_FILE_NAME,
             &format!("{}", SerializableProgram::from(program)),
         )?;
         Ok(())
     }
     fn summon(&self) -> Result<Program> {
         let program_string =
-            read_file_to_string(&self.save_dir.display().to_string(), "saved.json")?;
+            read_file_to_string(&self.save_dir.display().to_string(), PROGRAM_SAVE_FILE_NAME)?;
         let serializable_program: SerializableProgram =
             SerializableProgram::parse(&program_string)?;
         Ok(Program::from(&serializable_program)?)
