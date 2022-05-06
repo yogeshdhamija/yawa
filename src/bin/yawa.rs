@@ -1,8 +1,3 @@
-//! # YAWA: Yet Another Workout App
-//! Keeps track of your lifts and weights.  
-//! Program based on the GZCL method.  
-//! Relative weights from SymmetricStrength.com.  
-
 use anyhow::Result;
 use yawa::services::ports::{PersistenceAdapter, UserInputAdapter};
 use yawa::{adapters, controllers};

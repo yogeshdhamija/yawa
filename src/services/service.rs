@@ -2,11 +2,24 @@ use crate::lifting::LiftAttempt;
 use crate::programs::{start_gzcl_4day, Program};
 use crate::services::ports::{PersistenceAdapter, UserInputAdapter};
 use anyhow::{anyhow, Error, Result};
+use std::path::PathBuf;
 
 const LIFTING_PROGRAM_NOT_STARTED_ERROR_MESSAGE: &'static str = "Start a lifting program first!";
 
 fn not_started_error() -> Result<Program, Error> {
     Err(anyhow!(LIFTING_PROGRAM_NOT_STARTED_ERROR_MESSAGE))
+}
+
+pub fn apply_save_dir(
+    persistence_adapter: impl PersistenceAdapter,
+    maybe_dir: Option<PathBuf>,
+) -> impl PersistenceAdapter {
+    return if let Some(dir) = maybe_dir {
+        let new_adapter = persistence_adapter.set_save_dir(&dir);
+        new_adapter
+    } else {
+        persistence_adapter
+    };
 }
 
 pub fn complete_workout(

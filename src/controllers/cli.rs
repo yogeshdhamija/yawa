@@ -1,6 +1,7 @@
 use crate::lifting::LiftAttempt;
 use crate::services::ports::{PersistenceAdapter, UserInputAdapter};
 use crate::services::service;
+use crate::services::service::apply_save_dir;
 use anyhow::Result;
 use clap::{Parser, Subcommand};
 use std::path::PathBuf;
@@ -49,18 +50,6 @@ pub fn execute_based_on_args(
         Commands::Complete {} => complete(&persistence_adapter, user_input_adapter)?,
     };
     Ok(())
-}
-
-fn apply_save_dir(
-    persistence_adapter: impl PersistenceAdapter,
-    maybe_dir: Option<PathBuf>,
-) -> impl PersistenceAdapter {
-    return if let Some(dir) = maybe_dir {
-        let new_adapter = persistence_adapter.set_save_dir(&dir);
-        new_adapter
-    } else {
-        persistence_adapter
-    };
 }
 
 fn complete(
