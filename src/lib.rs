@@ -8,11 +8,11 @@
 //!
 //! Compile this as a binary to run in your terminal.
 
-/// Contains parts of the program that interact with outside systems, like the filesystem or a TUI.
+/// Interact with outside systems, like the filesystem or a TUI.
 pub mod adapters;
-/// Contains parts of the program that control execution of the app.
+/// Parse user input and ask a service to perform a relevant task.
 pub mod controllers;
-/// Contains parts of the program that combines data to/from multiple adapters.
+/// Coordinate multiple adapters to achieve a feature of the app.
 pub mod services;
 
 /// Useful primitives like Sets/Weights
