@@ -1,0 +1,21 @@
+{
+  "name": "GZCL-based 4-day cycle",
+  "workouts_completed": 0,
+  "reference_weight": 200,
+  "starting_reference_weight": 200,
+  "days_in_notation": [
+    "Pull | Weighted Pullup -> 4x3,1x3+ @ 0.5r-30 | Pullup -> 3x7+ | Barbell Row -> 3x10 @ 0.65r | Face Pull -> 2x15,1x15-25 @ add20 | Cable Curl -> 2x15,1x15-25 @ add20",
+    "Push | Bench press -> 4x3,1x3+ @ 1r | Overhead press -> 3x10 @ 0.5r | Incline bench press -> 3x10 @ 0.6r | Pushup -> 3x15+ | Tricep Cable Pressdown -> 2x15,1x15-25 @ add20",
+    "Legs | Squat -> 4x3,1x3+ @ 1.35r | Deadlift -> 3x8 @ 1.25r | Romanian Deadlift -> 3x10 @ 0.675r | Leg press -> 2x15,1x15-25 @ add30 | Standing dumbbell calf raise -> 2x15,1x15-25 @ add20",
+    "Core | Plank -> 1x30s @ any | Ab Rollout -> 3xAny | Cable Core Press -> 3xAny @ any | Bent-knee reverse hyperextension -> 3xAny @ any | Knee raises -> 3xAny | Leg extensions -> 3xAny @ any"
+  ],
+  "weights": {
+    "Leg press -> 2x15,1x15-25 @ add30": 45,
+    "Cable Curl -> 2x15,1x15-25 @ add20": 20,
+    "Face Pull -> 2x15,1x15-25 @ add20": 30,
+    "Tricep Cable Pressdown -> 2x15,1x15-25 @ add20": 20,
+    "Standing dumbbell calf raise -> 2x15,1x15-25 @ add20": 45
+  },
+  "current_day": 0,
+  "past_attempt_results_in_notation": []
+}

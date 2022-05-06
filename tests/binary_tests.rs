@@ -4,6 +4,7 @@ use assert_cmd::Command;
 use predicates::str::contains;
 use rand::random;
 use std::fs::{create_dir_all, remove_dir_all};
+use std::path::Path;
 
 #[test]
 fn displays_help() {
@@ -44,6 +45,7 @@ fn saves_in_desired_folder() {
             .stdout(contains("Current reference weight: 105\n"))
             .stdout(contains("Starting reference weight: 105\n"))
             .stdout(contains("Workouts completed: 0\n"));
+        assert!(Path::new(&format!("{dir}/in/a/nested/folder/yawa_save_data/info.txt")).is_file());
     });
 }
 

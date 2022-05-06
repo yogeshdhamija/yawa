@@ -15,12 +15,14 @@ use std::io::Read;
 use std::io::Write;
 use std::path::{Path, PathBuf};
 
+const INFO_SAVE_FILE_NAME: &'static str = "info.txt";
 const PROGRAM_SAVE_FILE_NAME: &'static str = "program.json";
 const SAVE_DIRECTORY_NAME: &'static str = "yawa_save_data";
 
 pub struct FileSystem {
     save_dir: PathBuf,
 }
+
 pub fn new() -> Result<FileSystem> {
     Ok(FileSystem {
         save_dir: {
@@ -146,6 +148,7 @@ impl PersistenceAdapter for FileSystem {
             PROGRAM_SAVE_FILE_NAME,
             &format!("{}", SerializableProgram::from(program)),
         )?;
+        self.save_info_file()?;
         Ok(())
     }
     fn summon(&self) -> Result<Program> {
@@ -154,6 +157,22 @@ impl PersistenceAdapter for FileSystem {
         let serializable_program: SerializableProgram =
             SerializableProgram::parse(&program_string)?;
         Ok(Program::from(&serializable_program)?)
+    }
+}
+
+impl FileSystem {
+    fn save_info_file(&self) -> Result<()> {
+        write_string_to_file(
+            &self.save_dir.display().to_string(),
+            INFO_SAVE_FILE_NAME,
+            &format!(
+                "Data in this folder was saved by yawa v{}.",
+                option_env!("CARGO_PKG_VERSION")
+                    .or(Some("UNKNOWN"))
+                    .unwrap()
+            ),
+        )?;
+        Ok(())
     }
 }
 
