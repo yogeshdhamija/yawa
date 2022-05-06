@@ -20,7 +20,11 @@ pub struct FileSystem {
 }
 pub fn new() -> Result<FileSystem> {
     Ok(FileSystem {
-        save_dir: current_dir()?,
+        save_dir: {
+            let mut dir = current_dir()?;
+            dir.push(&Path::new("yawa_save_data"));
+            dir
+        },
     })
 }
 
@@ -125,7 +129,11 @@ impl Display for SerializableProgram {
 impl PersistenceAdapter for FileSystem {
     fn set_save_dir(self, dir: &Path) -> Self {
         FileSystem {
-            save_dir: dir.to_path_buf(),
+            save_dir: {
+                let mut new_dir = dir.to_path_buf().clone();
+                new_dir.push(&Path::new("yawa_save_data"));
+                new_dir
+            },
         }
     }
 
