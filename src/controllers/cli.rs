@@ -3,12 +3,17 @@ use crate::services::ports::{PersistenceAdapter, UserInputAdapter};
 use crate::services::service;
 use anyhow::Result;
 use clap::{Parser, Subcommand};
+use std::path::PathBuf;
 
 #[derive(Debug, Parser)]
 #[clap(author, version, about)]
 struct Args {
     #[clap(subcommand)]
     command: Commands,
+
+    /// The directory used by yawa to save data. Default: current directory.
+    #[clap(short, long)]
+    save_directory: Option<PathBuf>,
 }
 
 #[derive(Debug, Subcommand)]
@@ -32,17 +37,30 @@ enum Commands {
 }
 
 pub fn execute_based_on_args(
-    persistence_adapter: &impl PersistenceAdapter,
+    persistence_adapter: impl PersistenceAdapter,
     user_input_adapter: &impl UserInputAdapter,
 ) -> Result<()> {
     let args = Args::parse();
+    let persistence_adapter = apply_save_dir(persistence_adapter, args.save_directory);
     match &args.command {
-        Commands::Status {} => status(persistence_adapter)?,
-        Commands::Start { reference_weight } => start(persistence_adapter, reference_weight)?,
-        Commands::Next {} => next(persistence_adapter)?,
-        Commands::Complete {} => complete(persistence_adapter, user_input_adapter)?,
+        Commands::Status {} => status(&persistence_adapter)?,
+        Commands::Start { reference_weight } => start(&persistence_adapter, reference_weight)?,
+        Commands::Next {} => next(&persistence_adapter)?,
+        Commands::Complete {} => complete(&persistence_adapter, user_input_adapter)?,
     };
     Ok(())
+}
+
+fn apply_save_dir(
+    persistence_adapter: impl PersistenceAdapter,
+    maybe_dir: Option<PathBuf>,
+) -> impl PersistenceAdapter {
+    return if let Some(dir) = maybe_dir {
+        let new_adapter = persistence_adapter.set_save_dir(&dir);
+        new_adapter
+    } else {
+        persistence_adapter
+    };
 }
 
 fn complete(

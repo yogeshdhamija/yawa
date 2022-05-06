@@ -13,10 +13,15 @@ use std::fs::create_dir_all;
 use std::fs::File;
 use std::io::Read;
 use std::io::Write;
+use std::path::{Path, PathBuf};
 
-pub struct FileSystem {}
-pub fn new() -> FileSystem {
-    FileSystem {}
+pub struct FileSystem {
+    save_dir: PathBuf,
+}
+pub fn new() -> Result<FileSystem> {
+    Ok(FileSystem {
+        save_dir: current_dir()?,
+    })
 }
 
 #[derive(Serialize, Deserialize)]
@@ -118,9 +123,15 @@ impl Display for SerializableProgram {
 }
 
 impl PersistenceAdapter for FileSystem {
+    fn set_save_dir(self, dir: &Path) -> Self {
+        FileSystem {
+            save_dir: dir.to_path_buf(),
+        }
+    }
+
     fn persist(&self, program: &Program) -> Result<()> {
         write_string_to_file(
-            &current_dir().unwrap().display().to_string(),
+            &self.save_dir.display().to_string(),
             "saved.json",
             &format!("{}", SerializableProgram::from(program)),
         )?;
@@ -128,7 +139,7 @@ impl PersistenceAdapter for FileSystem {
     }
     fn summon(&self) -> Result<Program> {
         let program_string =
-            read_file_to_string(&current_dir().unwrap().display().to_string(), "saved.json")?;
+            read_file_to_string(&self.save_dir.display().to_string(), "saved.json")?;
         let serializable_program: SerializableProgram =
             SerializableProgram::parse(&program_string)?;
         Ok(Program::from(&serializable_program)?)

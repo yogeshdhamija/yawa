@@ -27,6 +27,27 @@ fn fails_with_random_args() {
 }
 
 #[test]
+fn saves_in_desired_folder() {
+    in_clean_dir(|dir| {
+        assert("status", "", dir)
+            .failure()
+            .stderr(contains("Start a lifting program first!"));
+        assert("-s in/a/nested/folder/ start -r 105", "", dir)
+            .success()
+            .stdout(contains("Started program: GZCL-based 4-day cycle"));
+        assert("status", "", dir)
+            .failure()
+            .stderr(contains("Start a lifting program first!"));
+        assert("-s in/a/nested/folder/ status", "", dir)
+            .success()
+            .stdout(contains("Current program: GZCL-based 4-day cycle\n"))
+            .stdout(contains("Current reference weight: 105\n"))
+            .stdout(contains("Starting reference weight: 105\n"))
+            .stdout(contains("Workouts completed: 0\n"));
+    });
+}
+
+#[test]
 fn starts_program() {
     in_clean_dir(|dir| {
         assert("status", "", dir)
