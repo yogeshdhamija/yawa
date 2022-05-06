@@ -1,4 +1,4 @@
-use crate::lifting::{Day, Lift, LiftAttemptResult};
+use crate::lifting::{Day, Lift, LiftAttempt, LiftAttemptResult};
 use crate::programs::Program;
 use crate::services::ports::PersistenceAdapter;
 use anyhow::Result;
@@ -9,12 +9,13 @@ use serde_json::to_string_pretty;
 use std::collections::HashMap;
 use std::env::current_dir;
 use std::fmt::{Display, Formatter};
-use std::fs::create_dir_all;
 use std::fs::File;
+use std::fs::{create_dir_all, OpenOptions};
 use std::io::Read;
 use std::io::Write;
 use std::path::{Path, PathBuf};
 
+const HISTORY_SAVE_FILE_NAME: &'static str = "lift_history.txt";
 const INFO_SAVE_FILE_NAME: &'static str = "info.txt";
 const PROGRAM_SAVE_FILE_NAME: &'static str = "program.json";
 const SAVE_DIRECTORY_NAME: &'static str = "yawa_save_data";
@@ -151,6 +152,15 @@ impl PersistenceAdapter for FileSystem {
         self.save_info_file()?;
         Ok(())
     }
+
+    fn save_history(&self, attempt: &LiftAttempt, result: &LiftAttemptResult) -> Result<()> {
+        append_string_to_file(
+            &self.save_dir.display().to_string(),
+            HISTORY_SAVE_FILE_NAME,
+            &format!("{}: {} | {}\n", chrono::Utc::now(), attempt, result),
+        )
+    }
+
     fn summon(&self) -> Result<Program> {
         let program_string =
             read_file_to_string(&self.save_dir.display().to_string(), PROGRAM_SAVE_FILE_NAME)?;
@@ -174,6 +184,16 @@ impl FileSystem {
         )?;
         Ok(())
     }
+}
+
+fn append_string_to_file(directory: &str, file_name: &str, string: &str) -> Result<()> {
+    create_dir_all(directory)?;
+    let mut file = OpenOptions::new()
+        .append(true)
+        .create(true)
+        .open(format!("{}/{}", directory, file_name))?;
+    write!(file, "{}", string)?;
+    Ok(())
 }
 
 fn write_string_to_file(directory: &str, file_name: &str, string: &str) -> Result<()> {

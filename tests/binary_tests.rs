@@ -3,7 +3,8 @@ use assert_cmd::crate_name;
 use assert_cmd::Command;
 use predicates::str::contains;
 use rand::random;
-use std::fs::{create_dir_all, remove_dir_all};
+use std::fs::{create_dir_all, remove_dir_all, File};
+use std::io::Read;
 use std::path::Path;
 
 #[test]
@@ -90,6 +91,13 @@ fn completes_workout() {
             .success()
             .stdout(contains("Day: Push"))
             .stdout(contains("Bench press"));
+
+        let mut history_file_data = String::new();
+        let mut file =
+            File::open(Path::new(&format!("{dir}/yawa_save_data/lift_history.txt"))).unwrap();
+        file.read_to_string(&mut history_file_data).unwrap();
+
+        assert!(history_file_data.contains("Barbell Row -> 3x10 @ 65 | NotCompleted\n"));
     });
 }
 

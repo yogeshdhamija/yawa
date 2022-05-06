@@ -10,6 +10,7 @@ clap = { version = "*", features = ["derive"] } # Used for the controller, to in
 anyhow = "*"                                    # Used for propogating errors up throughout the lifting
 serde = { version="*", features = ["derive"] }  # Used by the filesystem adapter to persist/summon data
 serde_json = "*"                                # Used by the filesystem adapter to persist/summon data
+chrono = "*"                                    # Used by the filesystem adapter to log timestamps
 
 [dev-dependencies]
 assert_cmd = "*"

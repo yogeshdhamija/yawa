@@ -27,8 +27,15 @@ pub fn complete_workout(
     user_input_adapter: &impl UserInputAdapter,
 ) -> Result<()> {
     let program = get_program(persistence_adapter)?;
-    let results = user_input_adapter.check_complete(&program.next_workout())?;
-    persistence_adapter.persist(&program.complete_workout(&results))?;
+    let lift_attempts = program.next_workout();
+    let lift_results = user_input_adapter.check_complete(&lift_attempts)?;
+    persistence_adapter.persist(&program.complete_workout(&lift_results))?;
+    lift_attempts
+        .iter()
+        .enumerate()
+        .try_for_each(|(index, attempt)| {
+            persistence_adapter.save_history(&attempt, &lift_results[index])
+        })?;
     Ok(())
 }
 
