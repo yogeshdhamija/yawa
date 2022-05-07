@@ -133,7 +133,7 @@ pub fn start_gzcl_4day(reference_weight: usize) -> Program {
         Lift::parse(str).unwrap()
     }
     Program {
-        name: "GZCL-based 4-day cycle".to_string(),
+        name: "GZCL-based 4-day cycle (Pull, Push, Legs, Core)".to_string(),
         reference_weight,
         starting_reference_weight: reference_weight,
         weights: HashMap::from([

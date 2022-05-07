@@ -42,7 +42,7 @@ fn saves_in_desired_folder() {
             .stderr(contains("Start a lifting program first!"));
         assert("-s in/a/nested/folder/ status", "", dir)
             .success()
-            .stdout(contains("Current program: GZCL-based 4-day cycle\n"))
+            .stdout(contains("Current program: GZCL-based 4-day cycle"))
             .stdout(contains("Current reference weight: 105\n"))
             .stdout(contains("Starting reference weight: 105\n"))
             .stdout(contains("Workouts completed: 0\n"));
@@ -61,7 +61,7 @@ fn starts_program() {
             .stdout(contains("Started program: GZCL-based 4-day cycle"));
         assert("status", "", dir)
             .success()
-            .stdout(contains("Current program: GZCL-based 4-day cycle\n"))
+            .stdout(contains("Current program: GZCL-based 4-day cycle"))
             .stdout(contains("Current reference weight: 105\n"))
             .stdout(contains("Starting reference weight: 105\n"))
             .stdout(contains("Workouts completed: 0\n"));
