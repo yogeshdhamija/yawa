@@ -1,6 +1,6 @@
 [package]
 name = "yawa"
-version = "0.1.0"
+version = "1.0.0"
 edition = "2021"
 authors = ["Yogesh Dhamija"]
 description = "YAWA: Yet Another Workout App keeps track of your lifts and weights, through a program based on the GZCL method, and relative weights from SymmetricStrength.com."

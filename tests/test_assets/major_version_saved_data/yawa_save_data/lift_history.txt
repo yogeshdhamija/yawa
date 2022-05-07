@@ -1,0 +1,47 @@
+2022-05-07 18:22:58.863759 UTC: Weighted Pullup -> 4x3,1x3+ @ 70 | NotCompleted
+2022-05-07 18:22:58.863995 UTC: Pullup -> 3x7+ | Completed+MaxReps
+2022-05-07 18:22:58.865399 UTC: Barbell Row -> 3x10 @ 130 | Completed+MaxReps
+2022-05-07 18:22:58.865754 UTC: Face Pull -> 2x15,1x15-25 @ 30 | Completed+MaxReps
+2022-05-07 18:22:58.866901 UTC: Cable Curl -> 2x15,1x15-25 @ 20 | Completed+MaxReps
+2022-05-07 18:23:02.904285 UTC: Bench press -> 4x3,1x3+ @ 200 | Completed+MaxReps
+2022-05-07 18:23:02.905801 UTC: Overhead press -> 3x10 @ 100 | Completed+MaxReps
+2022-05-07 18:23:02.906191 UTC: Incline bench press -> 3x10 @ 120 | Completed+MaxReps
+2022-05-07 18:23:02.907344 UTC: Pushup -> 3x15+ | Completed+MaxReps
+2022-05-07 18:23:02.907658 UTC: Tricep Cable Pressdown -> 2x15,1x15-25 @ 20 | NotCompleted
+2022-05-07 18:23:07.966211 UTC: Squat -> 4x3,1x3+ @ 270 | Completed+MaxReps
+2022-05-07 18:23:07.966582 UTC: Deadlift -> 3x8 @ 250 | Completed+MaxReps
+2022-05-07 18:23:07.967777 UTC: Romanian Deadlift -> 3x10 @ 135 | Completed+MaxReps
+2022-05-07 18:23:07.968104 UTC: Leg press -> 2x15,1x15-25 @ 45 | NotCompleted
+2022-05-07 18:23:07.969212 UTC: Standing dumbbell calf raise -> 2x15,1x15-25 @ 45 | Completed+MaxReps
+2022-05-07 18:23:12.625219 UTC: Plank -> 1x30s @ any | Completed+MaxReps
+2022-05-07 18:23:12.626773 UTC: Ab Rollout -> 3xAny | NotCompleted
+2022-05-07 18:23:12.627192 UTC: Cable Core Press -> 3xAny @ any | Completed+MaxReps
+2022-05-07 18:23:12.628555 UTC: Bent-knee reverse hyperextension -> 3xAny @ any | Completed+MaxReps
+2022-05-07 18:23:12.628940 UTC: Knee raises -> 3xAny | Completed+MaxReps
+2022-05-07 18:23:12.630254 UTC: Leg extensions -> 3xAny @ any | Completed+MaxReps
+2022-05-07 18:23:17.478370 UTC: Weighted Pullup -> 4x3,1x3+ @ 70 | Completed+MaxReps
+2022-05-07 18:23:17.479774 UTC: Pullup -> 3x7+ | Completed+MaxReps
+2022-05-07 18:23:17.480180 UTC: Barbell Row -> 3x10 @ 130 | Completed+MaxReps
+2022-05-07 18:23:17.481459 UTC: Face Pull -> 2x15,1x15-25 @ 50 | Completed+MaxReps
+2022-05-07 18:23:17.481790 UTC: Cable Curl -> 2x15,1x15-25 @ 40 | Completed+MaxReps
+2022-05-07 18:23:21.495941 UTC: Bench press -> 4x3,1x3+ @ 200 | Completed+MaxReps
+2022-05-07 18:23:21.496336 UTC: Overhead press -> 3x10 @ 100 | Completed+MaxReps
+2022-05-07 18:23:21.497849 UTC: Incline bench press -> 3x10 @ 120 | Completed+MaxReps
+2022-05-07 18:23:21.498241 UTC: Pushup -> 3x15+ | Completed+MaxReps
+2022-05-07 18:23:21.499571 UTC: Tricep Cable Pressdown -> 2x15,1x15-25 @ 20 | Completed+MaxReps
+2022-05-07 18:23:27.055960 UTC: Squat -> 4x3,1x3+ @ 270 | Completed+MaxReps
+2022-05-07 18:23:27.057347 UTC: Deadlift -> 3x8 @ 250 | Completed+MaxReps
+2022-05-07 18:23:27.057727 UTC: Romanian Deadlift -> 3x10 @ 135 | Completed+MaxReps
+2022-05-07 18:23:27.059 UTC: Leg press -> 2x15,1x15-25 @ 45 | Completed+MaxReps
+2022-05-07 18:23:27.059387 UTC: Standing dumbbell calf raise -> 2x15,1x15-25 @ 65 | Completed+MaxReps
+2022-05-07 18:23:33.883103 UTC: Plank -> 1x30s @ any | Completed+MaxReps
+2022-05-07 18:23:33.883508 UTC: Ab Rollout -> 3xAny | Completed+MaxReps
+2022-05-07 18:23:33.885072 UTC: Cable Core Press -> 3xAny @ any | Completed+MaxReps
+2022-05-07 18:23:33.885450 UTC: Bent-knee reverse hyperextension -> 3xAny @ any | Completed+MaxReps
+2022-05-07 18:23:33.886723 UTC: Knee raises -> 3xAny | Completed+MaxReps
+2022-05-07 18:23:33.887118 UTC: Leg extensions -> 3xAny @ any | Completed+MaxReps
+2022-05-07 18:24:19.220705 UTC: Weighted Pullup -> 4x3,1x3+ @ 72.5 | Completed+MaxReps
+2022-05-07 18:24:19.221138 UTC: Pullup -> 3x7+ | Completed+MaxReps
+2022-05-07 18:24:19.222655 UTC: Barbell Row -> 3x10 @ 133.25 | Completed+MaxReps
+2022-05-07 18:24:19.223039 UTC: Face Pull -> 2x15,1x15-25 @ 70 | NotCompleted
+2022-05-07 18:24:19.224381 UTC: Cable Curl -> 2x15,1x15-25 @ 60 | Completed+MaxReps

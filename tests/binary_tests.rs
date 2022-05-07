@@ -114,6 +114,19 @@ fn prints_next_workout() {
     })
 }
 
+#[test]
+fn works_with_current_major_version_data() {
+    in_dir_with_current_major_version_data(|dir| {
+        assert("status", "", dir)
+            .success()
+            .stdout(contains("Workouts completed: 9"));
+        assert("next", "", dir)
+            .success()
+            .stdout(contains("Bench press -> 4x3,1x3+ @ 205"))
+            .stdout(contains("Tricep Cable Pressdown -> 2x15,1x15-25 @ 40"));
+    })
+}
+
 fn assert(args: &str, std_in: &str, in_dir: &str) -> Assert {
     create_dir_all(in_dir).unwrap();
     Command::cargo_bin(crate_name!())
@@ -140,4 +153,10 @@ where
     let test_dir = dir(test_number);
     clean(&test_dir);
     test(&test_dir)
+}
+fn in_dir_with_current_major_version_data<F, R>(test: F) -> R
+where
+    F: FnOnce(&str) -> R,
+{
+    test("tests/test_assets/major_version_saved_data/")
 }
