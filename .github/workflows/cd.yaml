@@ -1,0 +1,58 @@
+name: cd
+
+on:
+  schedule:
+    - cron: '27 8 * * *'
+  workflow_dispatch:
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  create-release:
+    runs-on: ubuntu-latest
+    outputs:
+      is-new-release: ${{ steps.create-release.outputs.is-new-release }}
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Create Release
+        id: create-release
+        run: ./scripts/release-latest-tag.sh || echo "::set-output name=is-new-release::false"
+        env:
+          GITHUB_TOKEN: ${{ secrets.CD_PIPELINE_GH_TOKEN }}
+  add-linux-binary:
+    runs-on: ubuntu-latest
+    needs: create-release
+    if: ${{ needs.create-release.outputs.is-new-release != 'false' }}
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Push File
+        run: |
+          latest_tag=$(git tag -l v\* --sort=-v:refname | head -n1)
+          git checkout "${latest_tag}"
+          cargo build --release
+          mv ./target/release/yawa ./target/release/yawa-linux
+          gh release upload "${latest_tag}" './target/release/yawa-linux#Linux'
+        env:
+          GITHUB_TOKEN: ${{ secrets.CD_PIPELINE_GH_TOKEN }}
+  add-mac-binary:
+    runs-on: macos-latest
+    needs: create-release
+    if: ${{ needs.create-release.outputs.is-new-release != 'false' }}
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Push File
+        run: |
+          latest_tag=$(git tag -l v\* --sort=-v:refname | head -n1)
+          git checkout "${latest_tag}"
+          cargo build --release
+          mv ./target/release/yawa ./target/release/yawa-mac
+          gh release upload "${latest_tag}" './target/release/yawa-mac#MacOS'
+        env:
+          GITHUB_TOKEN: ${{ secrets.CD_PIPELINE_GH_TOKEN }}
