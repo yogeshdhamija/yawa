@@ -176,7 +176,7 @@ impl FileSystem {
             &self.save_dir.display().to_string(),
             INFO_SAVE_FILE_NAME,
             &format!(
-                "Data in this folder was saved by yawa v{}.",
+                "Data in this folder was saved by the program yawa, version {}. See: https://github.com/yogeshdhamija/yawa",
                 option_env!("CARGO_PKG_VERSION")
                     .or(Some("UNKNOWN"))
                     .unwrap()
