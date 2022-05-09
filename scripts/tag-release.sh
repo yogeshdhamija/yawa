@@ -43,7 +43,7 @@ git diff --staged
 git commit -m "chore: version bump"
 
 echo "Creating new tag..."
-release_notes=$(printf '%s\n\nNew features:\n%s\n\nFixes:\n%s\n\n' "${new_latest_tag}" "${new_feats}" "${new_fixes}")
+release_notes=$(printf '%s\n\nNew features:\n%s\n--\nFixes:\n%s\n--\n' "${new_latest_tag}" "${new_feats}" "${new_fixes}")
 git tag -a "${new_latest_tag}" -m "${release_notes}"
 git push
 git push --tags

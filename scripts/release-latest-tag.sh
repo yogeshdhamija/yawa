@@ -9,5 +9,7 @@ if [[ is_already_released -ge 1 ]]
     exit 1
 fi
 
+notes=$(git tag -l --format="%(contents:body)" "${latest_tag}")
+
 echo "Releasing: ${latest_tag}";
-gh release create "${latest_tag}" --generate-notes
+gh release create "${latest_tag}" --generate-notes --notes "${notes}"
