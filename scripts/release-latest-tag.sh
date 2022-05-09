@@ -9,6 +9,9 @@ if [[ is_already_released -ge 1 ]]
     exit 1
 fi
 
+echo "Deleting old releases..."
+gh release list | awk '{ print $1 }' | xargs gh release delete -y
+
 notes=$(git tag -l --format="%(contents:body)" "${latest_tag}")
 
 echo "Releasing: ${latest_tag}";
