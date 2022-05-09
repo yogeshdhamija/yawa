@@ -284,6 +284,15 @@ impl LiftAttemptResult {
     }
 }
 
+fn round_up_to_nearest5(input: usize) -> usize{
+    let remainder = input % 5;
+    return if remainder > 0 {
+        input + (5 - remainder)
+    } else {
+        input
+    }
+}
+
 impl Display for LiftAttempt {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         match self.lift.weight {
@@ -291,13 +300,13 @@ impl Display for LiftAttempt {
                 write!(f, "{} -> {}", self.lift.name, format(&self.lift.sets))
             }
             WeightScheme::BasedOnReference { multiplier, offset } => {
-                let res = (multiplier * (self.weight.unwrap() as f64)) + (offset as f64);
+                let weight = (multiplier * (self.weight.unwrap() as f64)) + (offset as f64);
                 write!(
                     f,
                     "{} -> {} @ {}",
                     self.lift.name,
                     format(&self.lift.sets),
-                    res
+                    round_up_to_nearest5(weight.ceil() as usize)
                 )
             }
             WeightScheme::Any => {
@@ -309,7 +318,7 @@ impl Display for LiftAttempt {
                 self.lift.name,
                 format(&self.lift.sets),
                 if self.weight.is_some() {
-                    self.weight.unwrap().to_string()
+                    round_up_to_nearest5(self.weight.unwrap()).to_string()
                 } else {
                     "any".to_string()
                 }
@@ -424,6 +433,24 @@ mod tests {
                 }
             ),
             "Day Name | Bench press -> 3x5,1x5-6,1x6+ @ 2r | Pullup -> 3x5,1x5-6,1x6+"
+        );
+    }
+
+    #[test]
+    fn lift_attempts_round() {
+        assert_eq!(
+            LiftAttempt{
+                lift: Lift::parse("Doobee doos -> 3x5 @ add20").unwrap(),
+                weight: Some(22)
+            }.to_string(),
+            "Doobee doos -> 3x5 @ 25"
+        );
+        assert_eq!(
+            LiftAttempt{
+                    lift: Lift::parse("Doobee doos -> 3x5 @ 0.222r").unwrap(),
+                    weight: Some(100)
+            }.to_string(),
+            "Doobee doos -> 3x5 @ 25"
         );
     }
 
