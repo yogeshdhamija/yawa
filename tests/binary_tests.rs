@@ -10,7 +10,7 @@ use std::path::Path;
 #[test]
 fn displays_help() {
     in_clean_dir(|dir| {
-        assert("-h", "", dir).success().stdout(contains("USAGE"));
+        assert("-h", "", dir).success().stdout(contains("Usage"));
     });
 }
 
