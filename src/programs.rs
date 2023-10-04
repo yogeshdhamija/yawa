@@ -290,6 +290,7 @@ mod tests {
                     .complete_workout(&completed_all)
                     .complete_workout(&completed_all)
                     .complete_workout(&completed_all)
+                    .complete_workout(&completed_all)
                     .reference_weight,
                 100
             );
@@ -308,13 +309,36 @@ mod tests {
                 .complete_workout(&all_lifts_completed);
             assert_eq!(before_cycle_completed.reference_weight, 100);
 
-            let after_cycle_completed = start_gzcl_4day(100)
+            let after_cycle_completed = before_cycle_completed
+                .complete_workout(&all_lifts_completed);
+            assert_eq!(after_cycle_completed.reference_weight, 105);
+            assert_eq!(after_cycle_completed.starting_reference_weight, 100);
+        }
+        #[test]
+        fn is_not_affected_by_failures_in_previous_cycles() {
+            let incremented_weight = 105;
+            let not_incremented_weight = 100;
+            let all_lifts_completed = [Completed { completed_maximum_reps: true }; 5];
+            let all_lifts_not_completed = [NotCompleted; 5];
+
+            assert_eq!(start_gzcl_4day(not_incremented_weight).reference_weight, not_incremented_weight);
+            assert_eq!(start_gzcl_4day(not_incremented_weight).starting_reference_weight, not_incremented_weight);
+
+            let after_failed_cycle_completed = start_gzcl_4day(not_incremented_weight)
+                .complete_workout(&all_lifts_completed)
+                .complete_workout(&all_lifts_not_completed)
+                .complete_workout(&all_lifts_completed)
+                .complete_workout(&all_lifts_completed);
+            assert_eq!(after_failed_cycle_completed.reference_weight, not_incremented_weight);
+
+            let after_successful_cycle_completed = after_failed_cycle_completed
                 .complete_workout(&all_lifts_completed)
                 .complete_workout(&all_lifts_completed)
                 .complete_workout(&all_lifts_completed)
                 .complete_workout(&all_lifts_completed);
-            assert_eq!(after_cycle_completed.reference_weight, 105);
-            assert_eq!(after_cycle_completed.starting_reference_weight, 100);
+            assert_eq!(after_successful_cycle_completed.starting_reference_weight, not_incremented_weight);
+
+            assert_eq!(after_successful_cycle_completed.reference_weight, incremented_weight);
         }
         #[test]
         fn increments_each_day_and_rolls_over() {
