@@ -11,46 +11,55 @@ pub fn new() -> Tui {
 
 impl UserInputAdapter for Tui {
     fn check_complete(&self, attempts: &[LiftAttempt]) -> Result<Vec<LiftAttemptResult>> {
-        let mut results = Vec::new();
-
-        for attempt in attempts {
-            if attempt.has_rep_range() {
-                if get_user_confirmation(&format!("Did you complete: {}?", attempt))? {
-                    results.push(LiftAttemptResult::Completed {
-                        completed_maximum_reps: get_user_confirmation(
-                            &"        ... were you able to achieve the maximum rep range?",
-                        )?,
-                    })
-                } else {
-                    results.push(LiftAttemptResult::NotCompleted)
-                }
-            } else {
-                if get_user_confirmation(&format!("Did you complete: {}?", attempt))? {
-                    results.push(LiftAttemptResult::Completed {
-                        completed_maximum_reps: true,
-                    })
-                } else {
-                    results.push(LiftAttemptResult::NotCompleted)
-                }
-            }
-        }
-
-        Ok(results)
+        attempts.iter().map(ask_user_for_attempt_result).collect()
     }
+}
+
+fn ask_user_for_attempt_result(attempt: &LiftAttempt) -> Result<LiftAttemptResult, anyhow::Error> {
+    if did_complete_lift(attempt)? {
+        return Ok(LiftAttemptResult::Completed { completed_maximum_reps: did_complete_maximum_reps(attempt)? });
+    } else {
+        return Ok(LiftAttemptResult::NotCompleted);
+    }
+}
+
+fn did_complete_maximum_reps(attempt: &LiftAttempt) -> Result<bool, anyhow::Error> {
+    if attempt.has_rep_range() {
+        get_user_confirmation(&"        ... were you able to achieve the maximum rep range?")
+    } else {
+         Ok(true)
+    }
+}
+
+fn did_complete_lift(attempt: &LiftAttempt) -> Result<bool, anyhow::Error> {
+    get_user_confirmation(&format!(
+        "Did you complete: {}?",
+        attempt
+    ))
 }
 
 fn get_user_confirmation(prompt: &str) -> Result<bool> {
     loop {
-        print!("{} [y/n] ", prompt);
-        io::stdout().flush()?;
-        let mut string = String::new();
-        io::stdin().read_line(&mut string)?;
+        print_with_yes_or_no(prompt)?;
+        let string = read_string_from_stdin()?;
         if string.trim() == "y" {
             return Ok(true);
         } else if string.trim() == "n" {
             return Ok(false);
         }
     }
+}
+
+fn print_with_yes_or_no(prompt: &str) -> Result<(), anyhow::Error> {
+    print!("{} [y/n] ", prompt);
+    io::stdout().flush()?;
+    Ok(())
+}
+
+fn read_string_from_stdin() -> Result<String, std::io::Error> {
+    let mut string = String::new();
+    io::stdin().read_line(&mut string)?;
+    return Ok(string);
 }
 
 impl LiftAttempt {
