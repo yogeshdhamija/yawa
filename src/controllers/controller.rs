@@ -2,53 +2,20 @@ use crate::lifting::LiftAttempt;
 use crate::services::ports::{PersistenceAdapter, UserInputAdapter};
 use crate::services::service;
 use crate::services::service::apply_save_dir;
+use crate::user_input::Action;
 use anyhow::Result;
-use clap::{Parser, Subcommand};
-use std::path::PathBuf;
-
-#[derive(Debug, Parser)]
-#[clap(author, version, about)]
-struct Args {
-    #[clap(subcommand)]
-    command: Commands,
-
-    /// The directory used by yawa to save data. Default: current directory.
-    #[clap(short, long)]
-    save_directory: Option<PathBuf>,
-}
-
-#[derive(Debug, Subcommand)]
-enum Commands {
-    /// Start a new weightlifting routine! Let's GOOOoOoOo!!!!!1
-    Start {
-        /// The reference weight to start with (in lbs). 45 is a good number to start with if it's
-        /// your first time.
-        #[clap(short)]
-        reference_weight: usize,
-    },
-
-    /// Display current status of your lifting lifting.
-    Status {},
-
-    /// Show the next workout in your program.
-    Next {},
-
-    /// Complete the next workout of your program! (Run 'next' to see it first!)
-    Complete {},
-}
 
 pub fn start_ephemeral_interface(
     persistence_adapter: impl PersistenceAdapter,
     user_input_adapter: &impl UserInputAdapter,
 ) -> Result<()> {
-    // TODO: refactor clap to be in tui adapter
-    let args = Args::parse();
-    let persistence_adapter = apply_save_dir(persistence_adapter, args.save_directory);
-    match &args.command {
-        Commands::Status {} => status(&persistence_adapter)?,
-        Commands::Start { reference_weight } => start(&persistence_adapter, reference_weight)?,
-        Commands::Next {} => next(&persistence_adapter)?,
-        Commands::Complete {} => complete(&persistence_adapter, user_input_adapter)?,
+    let (action, save_path) = user_input_adapter.ask_what_to_do()?;
+    let persistence_adapter = apply_save_dir(persistence_adapter, save_path);
+    match action {
+        Action::SeeStatus => status(&persistence_adapter)?,
+        Action::StartProgram { reference_weight } => start(&persistence_adapter, &reference_weight)?,
+        Action::SeeNextDay => next(&persistence_adapter)?,
+        Action::CompleteDay => complete(&persistence_adapter, user_input_adapter)?,
     };
     Ok(())
 }

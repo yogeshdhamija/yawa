@@ -1,5 +1,5 @@
 use anyhow::Result;
-use std::path::Path;
+use std::path::{Path, PathBuf};
 
 use crate::lifting::{LiftAttempt, LiftAttemptResult};
 use crate::programs::Program;
@@ -14,5 +14,5 @@ pub trait PersistenceAdapter {
 
 pub trait UserInputAdapter {
     fn check_complete(&self, attempts: &[LiftAttempt]) -> Result<Vec<LiftAttemptResult>>;
-    fn ask_what_to_do(&self) -> Result<Action>;
+    fn ask_what_to_do(&self) -> Result<(Action, Option<PathBuf>)>;
 }
