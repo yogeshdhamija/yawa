@@ -1,5 +1,6 @@
 use crate::lifting::{LiftAttempt, LiftAttemptResult, Set};
 use crate::services::ports::UserInputAdapter;
+use crate::user_input::Action;
 use anyhow::Result;
 use std::io;
 use std::io::Write;
@@ -12,6 +13,10 @@ pub fn new() -> Tui {
 impl UserInputAdapter for Tui {
     fn check_complete(&self, attempts: &[LiftAttempt]) -> Result<Vec<LiftAttemptResult>> {
         attempts.iter().map(ask_user_for_attempt_result).collect()
+    }
+
+    fn ask_what_to_do(&self) -> Result<Action> {
+        todo!()
     }
 }
 

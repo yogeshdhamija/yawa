@@ -4,7 +4,7 @@ use yawa::{adapters, controllers};
 
 fn main() -> Result<()> {
     let (file_system_adapter, tui_adapter) = initialize_dependencies()?;
-    controllers::cli::execute_based_on_args(file_system_adapter, &tui_adapter)?;
+    controllers::controller::start_ephemeral_interface(file_system_adapter, &tui_adapter)?;
     Ok(())
 }
 

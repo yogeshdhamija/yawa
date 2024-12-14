@@ -37,10 +37,11 @@ enum Commands {
     Complete {},
 }
 
-pub fn execute_based_on_args(
+pub fn start_ephemeral_interface(
     persistence_adapter: impl PersistenceAdapter,
     user_input_adapter: &impl UserInputAdapter,
 ) -> Result<()> {
+    // TODO: refactor clap to be in tui adapter
     let args = Args::parse();
     let persistence_adapter = apply_save_dir(persistence_adapter, args.save_directory);
     match &args.command {
