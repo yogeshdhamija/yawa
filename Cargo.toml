@@ -20,3 +20,4 @@ chrono = "*"                                    # Used by the filesystem adapter
 assert_cmd = "*"
 predicates = "*"
 rand = "*"
+pretty_assertions = "*"

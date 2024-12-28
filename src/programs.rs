@@ -1,4 +1,5 @@
 use crate::lifting::*;
+use anyhow::{anyhow, Result};
 use std::collections::HashMap;
 
 #[derive(Clone, Debug, PartialEq)]
@@ -13,11 +14,34 @@ pub struct Program {
     pub current_cycle_attempt_results: Vec<Vec<LiftAttemptResult>>,
 }
 
+#[derive(Debug, PartialEq)]
 pub struct NewProgram {
     pub name: String,
     pub starting_reference_weight: usize,
     pub days: Vec<Day>,
     pub weights: HashMap<Lift, usize>,
+}
+
+impl NewProgram {
+    pub fn parse(notation: &str) -> Result<Self> {
+        let major_delimiter = " !!! ";
+        let minor_delimiter = " !! ";
+        let error = "Could not parse NewProgram";
+        let mut major_split = notation.split(major_delimiter);
+        Ok(NewProgram {
+            name: major_split.next().ok_or(anyhow!(error))?.to_string(),
+            starting_reference_weight: major_split.next().ok_or(anyhow!(error))?.parse()?,
+            days: major_split
+                .next()
+                .map(|days| {
+                    days.split(minor_delimiter)
+                        .flat_map(|day| Day::parse(day))
+                        .collect()
+                })
+                .ok_or(anyhow!(error))?,
+            weights: Default::default(),
+        })
+    }
 }
 
 impl Program {
@@ -211,10 +235,36 @@ pub fn start_gzcl_4day(reference_weight: usize) -> Program {
 #[cfg(test)]
 mod tests {
     use crate::programs::*;
-    
+
+    mod new_program {
+        use super::*;
+        use pretty_assertions::assert_eq;
+
+        #[test]
+        fn parses() {
+            assert_eq!(
+                NewProgram {
+                    name: "GZCL 4-Day".to_string(),
+                    starting_reference_weight: 135,
+                    days: vec![
+                        Day::parse("Day One | Bench press -> 3x5,1x5-6,1x6+ @ 2r | Pullup -> 3x5,1x5-6,1x6+").unwrap(),
+                        Day::parse("Day Two | Some lift -> 3xAny").unwrap(),
+                    ],
+                    weights: Default::default(), // todo
+                },
+                NewProgram::parse("GZCL 4-Day !!! 135 !!! Day One | Bench press -> 3x5,1x5-6,1x6+ @ 2r | Pullup -> 3x5,1x5-6,1x6+ !! Day Two | Some lift -> 3xAny").unwrap()
+            )
+        }
+
+        #[test]
+        fn fails_to_parse() {
+            NewProgram::parse("Banana !!! Banana").expect_err("Should have failed to parse");
+        }
+    }
+
     mod program {
         use super::*;
-        
+
         #[test]
         fn stores_weights() {
             assert_eq!(
@@ -325,8 +375,8 @@ mod tests {
                     .complete_workout(&all_lifts_completed);
                 assert_eq!(before_cycle_completed.reference_weight, 100);
 
-                let after_cycle_completed = before_cycle_completed
-                    .complete_workout(&all_lifts_completed);
+                let after_cycle_completed =
+                    before_cycle_completed.complete_workout(&all_lifts_completed);
                 assert_eq!(after_cycle_completed.reference_weight, 105);
                 assert_eq!(after_cycle_completed.starting_reference_weight, 100);
             }
@@ -334,27 +384,44 @@ mod tests {
             fn is_not_affected_by_failures_in_previous_cycles() {
                 let incremented_weight = 105;
                 let not_incremented_weight = 100;
-                let all_lifts_completed = [Completed { completed_maximum_reps: true }; 5];
+                let all_lifts_completed = [Completed {
+                    completed_maximum_reps: true,
+                }; 5];
                 let all_lifts_not_completed = [NotCompleted; 5];
 
-                assert_eq!(start_gzcl_4day(not_incremented_weight).reference_weight, not_incremented_weight);
-                assert_eq!(start_gzcl_4day(not_incremented_weight).starting_reference_weight, not_incremented_weight);
+                assert_eq!(
+                    start_gzcl_4day(not_incremented_weight).reference_weight,
+                    not_incremented_weight
+                );
+                assert_eq!(
+                    start_gzcl_4day(not_incremented_weight).starting_reference_weight,
+                    not_incremented_weight
+                );
 
                 let after_failed_cycle_completed = start_gzcl_4day(not_incremented_weight)
                     .complete_workout(&all_lifts_completed)
                     .complete_workout(&all_lifts_not_completed)
                     .complete_workout(&all_lifts_completed)
                     .complete_workout(&all_lifts_completed);
-                assert_eq!(after_failed_cycle_completed.reference_weight, not_incremented_weight);
+                assert_eq!(
+                    after_failed_cycle_completed.reference_weight,
+                    not_incremented_weight
+                );
 
                 let after_successful_cycle_completed = after_failed_cycle_completed
                     .complete_workout(&all_lifts_completed)
                     .complete_workout(&all_lifts_completed)
                     .complete_workout(&all_lifts_completed)
                     .complete_workout(&all_lifts_completed);
-                assert_eq!(after_successful_cycle_completed.starting_reference_weight, not_incremented_weight);
+                assert_eq!(
+                    after_successful_cycle_completed.starting_reference_weight,
+                    not_incremented_weight
+                );
 
-                assert_eq!(after_successful_cycle_completed.reference_weight, incremented_weight);
+                assert_eq!(
+                    after_successful_cycle_completed.reference_weight,
+                    incremented_weight
+                );
             }
             #[test]
             fn increments_each_day_and_rolls_over() {
