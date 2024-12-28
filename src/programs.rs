@@ -3,14 +3,21 @@ use std::collections::HashMap;
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct Program {
-    pub days: Vec<Day>,
+    pub name: String,
+    pub workouts_completed: usize,
     pub reference_weight: usize,
     pub starting_reference_weight: usize,
-    pub workouts_completed: usize,
-    pub name: String,
+    pub days: Vec<Day>,
     pub weights: HashMap<Lift, usize>,
     pub current_day: usize,
     pub current_cycle_attempt_results: Vec<Vec<LiftAttemptResult>>,
+}
+
+pub struct NewProgram {
+    pub name: String,
+    pub starting_reference_weight: usize,
+    pub days: Vec<Day>,
+    pub weights: HashMap<Lift, usize>,
 }
 
 impl Program {
@@ -132,20 +139,9 @@ pub fn start_gzcl_4day(reference_weight: usize) -> Program {
     fn lift(str: &str) -> Lift {
         Lift::parse(str).unwrap()
     }
-    Program {
+    let gzcl_4day = NewProgram {
         name: "GZCL-based 4-day cycle (Pull, Push, Legs, Core)".to_string(),
-        reference_weight,
         starting_reference_weight: reference_weight,
-        weights: HashMap::from([
-            (lift("Face Pull -> 2x15,1x15-25 @ add20"), 30),
-            (lift("Cable Curl -> 2x15,1x15-25 @ add20"), 20),
-            (lift("Tricep Cable Pressdown -> 2x15,1x15-25 @ add20"), 20),
-            (lift("Leg press -> 2x15,1x15-25 @ add30"), 45),
-            (
-                lift("Standing dumbbell calf raise -> 2x15,1x15-25 @ add20"),
-                45,
-            ),
-        ]),
         days: vec![
             Day {
                 name: "Pull".to_string(),
@@ -189,6 +185,23 @@ pub fn start_gzcl_4day(reference_weight: usize) -> Program {
                 ],
             },
         ],
+        weights: HashMap::from([
+            (lift("Face Pull -> 2x15,1x15-25 @ add20"), 30),
+            (lift("Cable Curl -> 2x15,1x15-25 @ add20"), 20),
+            (lift("Tricep Cable Pressdown -> 2x15,1x15-25 @ add20"), 20),
+            (lift("Leg press -> 2x15,1x15-25 @ add30"), 45),
+            (
+                lift("Standing dumbbell calf raise -> 2x15,1x15-25 @ add20"),
+                45,
+            ),
+        ]),
+    };
+    Program {
+        name: gzcl_4day.name,
+        reference_weight: gzcl_4day.starting_reference_weight,
+        starting_reference_weight: gzcl_4day.starting_reference_weight,
+        weights: gzcl_4day.weights,
+        days: gzcl_4day.days,
         current_day: 0,
         current_cycle_attempt_results: vec![],
         workouts_completed: 0,
@@ -198,165 +211,169 @@ pub fn start_gzcl_4day(reference_weight: usize) -> Program {
 #[cfg(test)]
 mod tests {
     use crate::programs::*;
-
-    #[test]
-    fn stores_weights() {
-        assert_eq!(
-            format!("{}", start_gzcl_4day(100).next_workout()[0]),
-            "Weighted Pullup -> 4x3,1x3+ @ 20"
-        );
-        assert_eq!(
-            format!("{}", start_gzcl_4day(100).next_workout()[1]),
-            "Pullup -> 3x7+"
-        );
-    }
-
-    #[test]
-    fn all_non_reference_weights_initialized() {
-        assert_eq!(
-            format!("{}", start_gzcl_4day(100).next_workout()[3]),
-            "Face Pull -> 2x15,1x15-25 @ 30"
-        );
-        assert_eq!(
-            format!("{}", start_gzcl_4day(100).next_workout()[4]),
-            "Cable Curl -> 2x15,1x15-25 @ 20"
-        );
-    }
-
-    mod incrementing {
+    
+    mod program {
         use super::*;
-        use crate::lifting::LiftAttemptResult::{Completed, NotCompleted};
-
+        
         #[test]
-        fn increments_weights() {
-            let before = start_gzcl_4day(100);
-            let lift_incremented = before.days[0].lifts[3].clone();
+        fn stores_weights() {
             assert_eq!(
-                lift_incremented.to_string(),
-                "Face Pull -> 2x15,1x15-25 @ add20"
+                format!("{}", start_gzcl_4day(100).next_workout()[0]),
+                "Weighted Pullup -> 4x3,1x3+ @ 20"
             );
-            let lift_not_incremented = before.days[0].lifts[4].clone();
             assert_eq!(
-                lift_not_incremented.to_string(),
-                "Cable Curl -> 2x15,1x15-25 @ add20"
-            );
-            assert_eq!(before.weights[&lift_incremented], 30);
-            assert_eq!(before.weights[&lift_not_incremented], 20);
-            let after = before.complete_workout(&[
-                Completed {
-                    completed_maximum_reps: true,
-                },
-                Completed {
-                    completed_maximum_reps: true,
-                },
-                Completed {
-                    completed_maximum_reps: true,
-                },
-                Completed {
-                    completed_maximum_reps: true,
-                },
-                Completed {
-                    completed_maximum_reps: false,
-                },
-            ]);
-            assert_eq!(after.weights[&lift_incremented], 50);
-            assert_eq!(after.weights[&lift_not_incremented], 20);
-        }
-
-        #[test]
-        fn doesnt_increment_reference_weight_if_any_not_completed() {
-            let completed_all = [Completed {
-                completed_maximum_reps: true,
-            }; 5];
-            let one_incomplete = [
-                NotCompleted,
-                Completed {
-                    completed_maximum_reps: true,
-                },
-                Completed {
-                    completed_maximum_reps: true,
-                },
-                Completed {
-                    completed_maximum_reps: true,
-                },
-                Completed {
-                    completed_maximum_reps: true,
-                },
-            ];
-            assert_eq!(start_gzcl_4day(100).reference_weight, 100);
-            assert_eq!(
-                start_gzcl_4day(100)
-                    .complete_workout(&one_incomplete)
-                    .complete_workout(&completed_all)
-                    .complete_workout(&completed_all)
-                    .complete_workout(&completed_all)
-                    .complete_workout(&completed_all)
-                    .reference_weight,
-                100
+                format!("{}", start_gzcl_4day(100).next_workout()[1]),
+                "Pullup -> 3x7+"
             );
         }
+
         #[test]
-        fn increments_reference_weight_if_all_completed() {
-            assert_eq!(start_gzcl_4day(100).reference_weight, 100);
-            assert_eq!(start_gzcl_4day(100).starting_reference_weight, 100);
-            let all_lifts_completed = [Completed {
-                completed_maximum_reps: true,
-            }; 5];
-
-            let before_cycle_completed = start_gzcl_4day(100)
-                .complete_workout(&all_lifts_completed)
-                .complete_workout(&all_lifts_completed)
-                .complete_workout(&all_lifts_completed);
-            assert_eq!(before_cycle_completed.reference_weight, 100);
-
-            let after_cycle_completed = before_cycle_completed
-                .complete_workout(&all_lifts_completed);
-            assert_eq!(after_cycle_completed.reference_weight, 105);
-            assert_eq!(after_cycle_completed.starting_reference_weight, 100);
+        fn all_non_reference_weights_initialized() {
+            assert_eq!(
+                format!("{}", start_gzcl_4day(100).next_workout()[3]),
+                "Face Pull -> 2x15,1x15-25 @ 30"
+            );
+            assert_eq!(
+                format!("{}", start_gzcl_4day(100).next_workout()[4]),
+                "Cable Curl -> 2x15,1x15-25 @ 20"
+            );
         }
-        #[test]
-        fn is_not_affected_by_failures_in_previous_cycles() {
-            let incremented_weight = 105;
-            let not_incremented_weight = 100;
-            let all_lifts_completed = [Completed { completed_maximum_reps: true }; 5];
-            let all_lifts_not_completed = [NotCompleted; 5];
 
-            assert_eq!(start_gzcl_4day(not_incremented_weight).reference_weight, not_incremented_weight);
-            assert_eq!(start_gzcl_4day(not_incremented_weight).starting_reference_weight, not_incremented_weight);
+        mod incrementing {
+            use super::*;
+            use crate::lifting::LiftAttemptResult::{Completed, NotCompleted};
 
-            let after_failed_cycle_completed = start_gzcl_4day(not_incremented_weight)
-                .complete_workout(&all_lifts_completed)
-                .complete_workout(&all_lifts_not_completed)
-                .complete_workout(&all_lifts_completed)
-                .complete_workout(&all_lifts_completed);
-            assert_eq!(after_failed_cycle_completed.reference_weight, not_incremented_weight);
+            #[test]
+            fn increments_weights() {
+                let before = start_gzcl_4day(100);
+                let lift_incremented = before.days[0].lifts[3].clone();
+                assert_eq!(
+                    lift_incremented.to_string(),
+                    "Face Pull -> 2x15,1x15-25 @ add20"
+                );
+                let lift_not_incremented = before.days[0].lifts[4].clone();
+                assert_eq!(
+                    lift_not_incremented.to_string(),
+                    "Cable Curl -> 2x15,1x15-25 @ add20"
+                );
+                assert_eq!(before.weights[&lift_incremented], 30);
+                assert_eq!(before.weights[&lift_not_incremented], 20);
+                let after = before.complete_workout(&[
+                    Completed {
+                        completed_maximum_reps: true,
+                    },
+                    Completed {
+                        completed_maximum_reps: true,
+                    },
+                    Completed {
+                        completed_maximum_reps: true,
+                    },
+                    Completed {
+                        completed_maximum_reps: true,
+                    },
+                    Completed {
+                        completed_maximum_reps: false,
+                    },
+                ]);
+                assert_eq!(after.weights[&lift_incremented], 50);
+                assert_eq!(after.weights[&lift_not_incremented], 20);
+            }
 
-            let after_successful_cycle_completed = after_failed_cycle_completed
-                .complete_workout(&all_lifts_completed)
-                .complete_workout(&all_lifts_completed)
-                .complete_workout(&all_lifts_completed)
-                .complete_workout(&all_lifts_completed);
-            assert_eq!(after_successful_cycle_completed.starting_reference_weight, not_incremented_weight);
+            #[test]
+            fn doesnt_increment_reference_weight_if_any_not_completed() {
+                let completed_all = [Completed {
+                    completed_maximum_reps: true,
+                }; 5];
+                let one_incomplete = [
+                    NotCompleted,
+                    Completed {
+                        completed_maximum_reps: true,
+                    },
+                    Completed {
+                        completed_maximum_reps: true,
+                    },
+                    Completed {
+                        completed_maximum_reps: true,
+                    },
+                    Completed {
+                        completed_maximum_reps: true,
+                    },
+                ];
+                assert_eq!(start_gzcl_4day(100).reference_weight, 100);
+                assert_eq!(
+                    start_gzcl_4day(100)
+                        .complete_workout(&one_incomplete)
+                        .complete_workout(&completed_all)
+                        .complete_workout(&completed_all)
+                        .complete_workout(&completed_all)
+                        .complete_workout(&completed_all)
+                        .reference_weight,
+                    100
+                );
+            }
+            #[test]
+            fn increments_reference_weight_if_all_completed() {
+                assert_eq!(start_gzcl_4day(100).reference_weight, 100);
+                assert_eq!(start_gzcl_4day(100).starting_reference_weight, 100);
+                let all_lifts_completed = [Completed {
+                    completed_maximum_reps: true,
+                }; 5];
 
-            assert_eq!(after_successful_cycle_completed.reference_weight, incremented_weight);
-        }
-        #[test]
-        fn increments_each_day_and_rolls_over() {
-            assert_eq!(start_gzcl_4day(100).current_day, 0);
+                let before_cycle_completed = start_gzcl_4day(100)
+                    .complete_workout(&all_lifts_completed)
+                    .complete_workout(&all_lifts_completed)
+                    .complete_workout(&all_lifts_completed);
+                assert_eq!(before_cycle_completed.reference_weight, 100);
 
-            let before_completing_cycle = start_gzcl_4day(100)
-                .complete_workout(&[NotCompleted; 5])
-                .complete_workout(&[NotCompleted; 5]);
-            assert_eq!(before_completing_cycle.current_day, 2);
-            assert_eq!(before_completing_cycle.workouts_completed, 2);
+                let after_cycle_completed = before_cycle_completed
+                    .complete_workout(&all_lifts_completed);
+                assert_eq!(after_cycle_completed.reference_weight, 105);
+                assert_eq!(after_cycle_completed.starting_reference_weight, 100);
+            }
+            #[test]
+            fn is_not_affected_by_failures_in_previous_cycles() {
+                let incremented_weight = 105;
+                let not_incremented_weight = 100;
+                let all_lifts_completed = [Completed { completed_maximum_reps: true }; 5];
+                let all_lifts_not_completed = [NotCompleted; 5];
 
-            let after_completing_cycle = start_gzcl_4day(100)
-                .complete_workout(&[NotCompleted; 5])
-                .complete_workout(&[NotCompleted; 5])
-                .complete_workout(&[NotCompleted; 5])
-                .complete_workout(&[NotCompleted; 5]);
-            assert_eq!(after_completing_cycle.current_day, 0);
-            assert_eq!(after_completing_cycle.workouts_completed, 4);
+                assert_eq!(start_gzcl_4day(not_incremented_weight).reference_weight, not_incremented_weight);
+                assert_eq!(start_gzcl_4day(not_incremented_weight).starting_reference_weight, not_incremented_weight);
+
+                let after_failed_cycle_completed = start_gzcl_4day(not_incremented_weight)
+                    .complete_workout(&all_lifts_completed)
+                    .complete_workout(&all_lifts_not_completed)
+                    .complete_workout(&all_lifts_completed)
+                    .complete_workout(&all_lifts_completed);
+                assert_eq!(after_failed_cycle_completed.reference_weight, not_incremented_weight);
+
+                let after_successful_cycle_completed = after_failed_cycle_completed
+                    .complete_workout(&all_lifts_completed)
+                    .complete_workout(&all_lifts_completed)
+                    .complete_workout(&all_lifts_completed)
+                    .complete_workout(&all_lifts_completed);
+                assert_eq!(after_successful_cycle_completed.starting_reference_weight, not_incremented_weight);
+
+                assert_eq!(after_successful_cycle_completed.reference_weight, incremented_weight);
+            }
+            #[test]
+            fn increments_each_day_and_rolls_over() {
+                assert_eq!(start_gzcl_4day(100).current_day, 0);
+
+                let before_completing_cycle = start_gzcl_4day(100)
+                    .complete_workout(&[NotCompleted; 5])
+                    .complete_workout(&[NotCompleted; 5]);
+                assert_eq!(before_completing_cycle.current_day, 2);
+                assert_eq!(before_completing_cycle.workouts_completed, 2);
+
+                let after_completing_cycle = start_gzcl_4day(100)
+                    .complete_workout(&[NotCompleted; 5])
+                    .complete_workout(&[NotCompleted; 5])
+                    .complete_workout(&[NotCompleted; 5])
+                    .complete_workout(&[NotCompleted; 5]);
+                assert_eq!(after_completing_cycle.current_day, 0);
+                assert_eq!(after_completing_cycle.workouts_completed, 4);
+            }
         }
     }
 }
