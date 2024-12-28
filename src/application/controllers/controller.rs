@@ -1,8 +1,8 @@
-use crate::lifting::LiftAttempt;
-use crate::services::ports::{PersistenceAdapter, UserInputAdapter};
-use crate::services::service;
-use crate::services::service::apply_save_dir;
-use crate::user_input::Action;
+use crate::domain::lifting::LiftAttempt;
+use crate::application::services::ports::{PersistenceAdapter, UserInputAdapter};
+use crate::application::services::service;
+use crate::application::services::service::apply_save_dir;
+use crate::domain::user_input::Action;
 use anyhow::Result;
 
 pub fn start_ephemeral_interface(

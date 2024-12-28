@@ -8,16 +8,8 @@
 //!
 //! Compile this as a binary to run in your terminal.
 
-/// Interact with outside systems, like the filesystem or a TUI.
-pub mod adapters;
-/// Parse user input and ask a service to perform a relevant task.
-pub mod controllers;
-/// Coordinate multiple adapters to achieve a feature of the app.
-pub mod services;
+/// Contains the code to orchestrate how the application works (controllers, services, adapters)
+pub mod application;
 
-/// Useful primitives like Sets/Weights
-pub mod lifting;
-/// Useful primitives: the program
-pub mod programs;
-/// Useful primitives: user actions
-pub mod user_input;
+/// Contains domain objects and functions
+pub mod domain;

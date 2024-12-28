@@ -35,7 +35,7 @@ impl Display for WeightScheme {
 impl WeightScheme {
     /// notation options:
     /// ```
-    /// # use yawa::lifting::WeightScheme;
+    /// # use yawa::domain::lifting::WeightScheme;
     /// WeightScheme::parse("any").unwrap();
     /// WeightScheme::parse("3.14r+12").unwrap();
     /// WeightScheme::parse("3.14r-12").unwrap();
@@ -98,7 +98,7 @@ impl Display for Set {
 impl Set {
     /// notation options:
     /// ```
-    /// # use yawa::lifting::Set;
+    /// # use yawa::domain::lifting::Set;
     /// Set::parse("8-12").unwrap();
     /// Set::parse("3+").unwrap();
     /// Set::parse("Any").unwrap();
@@ -189,7 +189,7 @@ impl Display for Lift {
 impl Lift {
     /// General idea:
     /// ```
-    /// # use yawa::lifting::Lift;
+    /// # use yawa::domain::lifting::Lift;
     /// Lift::parse("name -> 3xReps,1xReps @ weight").is_err();
     /// ```
     /// See `Set::parse()` and `WeightScheme::parse()` to
@@ -198,7 +198,7 @@ impl Lift {
     ///
     /// Example:
     /// ```
-    /// # use yawa::lifting::Lift;
+    /// # use yawa::domain::lifting::Lift;
     /// Lift::parse("Barbell bench press -> 3x5,1x5-6,1x6+ @ 0.8r-10").unwrap();
     /// ```
     pub fn parse(notation: &str) -> Result<Self> {
@@ -273,7 +273,7 @@ impl Display for LiftAttemptResult {
 impl LiftAttemptResult {
     /// Notation options:
     /// ```
-    /// # use yawa::lifting::LiftAttemptResult;
+    /// # use yawa::domain::lifting::LiftAttemptResult;
     /// LiftAttemptResult::parse("NotCompleted").unwrap();
     /// LiftAttemptResult::parse("Completed").unwrap();
     /// LiftAttemptResult::parse("Completed+MaxReps").unwrap();
@@ -344,7 +344,7 @@ pub struct Day {
 
 impl Day {
     /// ```
-    /// # use yawa::lifting::Day;
+    /// # use yawa::domain::lifting::Day;
     /// Day::parse("Day Name | Bench press -> 3x5,1x5-6,1x6+ @ 2r | Pullup -> 3x5,1x5-6,1x6+").unwrap();
     /// Day::parse("Something else").is_err();
     /// ```
@@ -376,7 +376,7 @@ impl Display for Day {
 
 #[cfg(test)]
 mod tests {
-    use crate::lifting::*;
+    use crate::domain::lifting::*;
     use std::time::Duration;
 
     #[test]

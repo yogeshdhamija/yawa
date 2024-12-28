@@ -1,6 +1,6 @@
 use anyhow::Result;
-use yawa::services::ports::{PersistenceAdapter, UserInputAdapter};
-use yawa::{adapters, controllers};
+use yawa::application::services::ports::{PersistenceAdapter, UserInputAdapter};
+use yawa::application::{adapters, controllers};
 
 fn main() -> Result<()> {
     let (file_system_adapter, tui_adapter) = initialize_dependencies()?;

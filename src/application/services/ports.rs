@@ -1,9 +1,9 @@
 use anyhow::Result;
 use std::path::{Path, PathBuf};
 
-use crate::lifting::{LiftAttempt, LiftAttemptResult};
-use crate::programs::Program;
-use crate::user_input::Action;
+use crate::domain::lifting::{LiftAttempt, LiftAttemptResult};
+use crate::domain::programs::Program;
+use crate::domain::user_input::Action;
 
 pub trait PersistenceAdapter {
     fn set_save_dir(self, dir: &Path) -> Self;

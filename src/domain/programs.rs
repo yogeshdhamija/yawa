@@ -1,4 +1,4 @@
-use crate::lifting::*;
+use crate::domain::lifting::*;
 use anyhow::{anyhow, Result};
 use std::collections::HashMap;
 
@@ -234,7 +234,7 @@ pub fn start_gzcl_4day(reference_weight: usize) -> Program {
 
 #[cfg(test)]
 mod tests {
-    use crate::programs::*;
+    use crate::domain::programs::*;
 
     mod new_program {
         use super::*;
@@ -291,7 +291,7 @@ mod tests {
 
         mod incrementing {
             use super::*;
-            use crate::lifting::LiftAttemptResult::{Completed, NotCompleted};
+            use crate::domain::lifting::LiftAttemptResult::{Completed, NotCompleted};
 
             #[test]
             fn increments_weights() {

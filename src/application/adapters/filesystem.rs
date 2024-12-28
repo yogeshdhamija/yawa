@@ -1,6 +1,6 @@
-use crate::lifting::{Day, Lift, LiftAttempt, LiftAttemptResult};
-use crate::programs::Program;
-use crate::services::ports::PersistenceAdapter;
+use crate::application::services::ports::PersistenceAdapter;
+use crate::domain::lifting::{Day, Lift, LiftAttempt, LiftAttemptResult};
+use crate::domain::programs::Program;
 use anyhow::Result;
 use serde::Deserialize;
 use serde::Serialize;
@@ -213,7 +213,7 @@ fn read_file_to_string(directory: &str, file_name: &str) -> Result<String> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::programs::start_gzcl_4day;
+    use crate::domain::programs::start_gzcl_4day;
 
     #[test]
     fn can_create_and_save_program() {

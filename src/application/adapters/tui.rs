@@ -1,6 +1,6 @@
-use crate::lifting::{LiftAttempt, LiftAttemptResult, Set};
-use crate::services::ports::UserInputAdapter;
-use crate::user_input::Action;
+use crate::domain::lifting::{LiftAttempt, LiftAttemptResult, Set};
+use crate::application::services::ports::UserInputAdapter;
+use crate::domain::user_input::Action;
 use anyhow::Result;
 use clap::{Parser, Subcommand};
 use std::io;

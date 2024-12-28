@@ -1,6 +1,6 @@
-use crate::lifting::LiftAttempt;
-use crate::programs::{start_gzcl_4day, Program};
-use crate::services::ports::{PersistenceAdapter, UserInputAdapter};
+use crate::application::services::ports::{PersistenceAdapter, UserInputAdapter};
+use crate::domain::lifting::LiftAttempt;
+use crate::domain::programs::{start_gzcl_4day, Program};
 use anyhow::{anyhow, Error, Result};
 use std::path::PathBuf;
 
