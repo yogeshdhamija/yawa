@@ -1,5 +1,6 @@
-use crate::domain::lifting::{LiftAttempt, LiftAttemptResult, Set};
 use crate::application::services::ports::UserInputAdapter;
+use crate::domain::lifting::{LiftAttempt, LiftAttemptResult};
+use crate::domain::set::Set;
 use crate::domain::user_input::Action;
 use anyhow::Result;
 use clap::{Parser, Subcommand};
@@ -52,7 +53,9 @@ impl UserInputAdapter for Tui {
         let args = Args::parse();
         Ok((
             match args.command {
-                Commands::Start { reference_weight } => Action::StartProgram { reference_weight: reference_weight },
+                Commands::Start { reference_weight } => Action::StartProgram {
+                    reference_weight: reference_weight,
+                },
                 Commands::Status {} => Action::SeeStatus,
                 Commands::Next {} => Action::SeeNextDay,
                 Commands::Complete {} => Action::CompleteDay,
