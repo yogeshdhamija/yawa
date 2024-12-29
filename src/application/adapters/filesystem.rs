@@ -1,5 +1,5 @@
 use crate::application::services::ports::PersistenceAdapter;
-use crate::domain::lifting::{Day, Lift, LiftAttempt, LiftAttemptResult};
+use crate::domain::lifting::{ Lift, LiftAttempt, LiftAttemptResult};
 use crate::domain::programs::Program;
 use anyhow::Result;
 use serde::Deserialize;
@@ -14,6 +14,7 @@ use std::fs::{create_dir_all, OpenOptions};
 use std::io::Read;
 use std::io::Write;
 use std::path::{Path, PathBuf};
+use crate::domain::day::Day;
 
 const HISTORY_SAVE_FILE_NAME: &'static str = "lift_history.txt";
 const INFO_SAVE_FILE_NAME: &'static str = "info.txt";

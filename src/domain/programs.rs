@@ -1,6 +1,7 @@
 use crate::domain::lifting::*;
 use anyhow::{anyhow, Result};
 use std::collections::HashMap;
+use crate::domain::day::Day;
 use crate::domain::weight_scheme::*;
 
 #[derive(Clone, Debug, PartialEq)]
