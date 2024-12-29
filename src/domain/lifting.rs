@@ -211,8 +211,6 @@ impl Display for LiftAttempt {
 #[cfg(test)]
 mod tests {
     use crate::domain::lifting::*;
-    use std::time::Duration;
-    use crate::domain::day::Day;
 
     #[test]
     fn can_serialize_lift_attempt_result() {
@@ -250,38 +248,6 @@ mod tests {
             LiftAttemptResult::Completed {
                 completed_maximum_reps: true
             }
-        );
-    }
-
-    #[test]
-    fn can_parse_day() {
-        assert_eq!(
-            Day {
-                name: "Day Name".to_string(),
-                lifts: vec![
-                    Lift::parse("Bench press -> 3x5,1x5-6,1x6+ @ 2r").unwrap(),
-                    Lift::parse("Pullup -> 3x5,1x5-6,1x6+").unwrap()
-                ],
-            },
-            Day::parse("Day Name | Bench press -> 3x5,1x5-6,1x6+ @ 2r | Pullup -> 3x5,1x5-6,1x6+")
-                .unwrap()
-        );
-    }
-
-    #[test]
-    fn can_create_day() {
-        assert_eq!(
-            format!(
-                "{}",
-                Day {
-                    name: "Day Name".to_string(),
-                    lifts: vec![
-                        Lift::parse("Bench press -> 3x5,1x5-6,1x6+ @ 2r").unwrap(),
-                        Lift::parse("Pullup -> 3x5,1x5-6,1x6+").unwrap()
-                    ],
-                }
-            ),
-            "Day Name | Bench press -> 3x5,1x5-6,1x6+ @ 2r | Pullup -> 3x5,1x5-6,1x6+"
         );
     }
 
@@ -394,90 +360,6 @@ mod tests {
                 Lift::parse("Pullups -> 2x5,1x5-7,1x5+ @ 0.2r").unwrap()
             ),
             "Pullups -> 2x5,1x5-7,1x5+ @ 0.2r"
-        );
-    }
-
-    #[test]
-    fn can_create_rep_schemes() {
-        assert!(Set::parse(":(").is_err());
-        assert_eq!(
-            Set::parse("2-3").unwrap(),
-            Set::Range {
-                maximum_reps: 3,
-                minimum_reps: 2
-            }
-        );
-        assert_eq!(Set::parse("3+").unwrap(), Set::Amrap { minimum_reps: 3 });
-        assert_eq!(Set::parse("3").unwrap(), Set::Defined { reps: 3 });
-        assert_eq!(Set::parse("Any").unwrap(), Set::Any);
-        assert_eq!(
-            Set::parse("2s").unwrap(),
-            Set::Time {
-                duration: Duration::new(2, 0)
-            }
-        );
-    }
-
-    #[test]
-    fn can_display_rep_schemes() {
-        assert_eq!(format!("{}", Set::parse("2-3").unwrap()), "2-3");
-        assert_eq!(format!("{}", Set::parse("3+").unwrap()), "3+");
-        assert_eq!(format!("{}", Set::parse("3").unwrap()), "3");
-        assert_eq!(format!("{}", Set::parse("Any").unwrap()), "Any");
-        assert_eq!(format!("{}", Set::parse("2s").unwrap()), "2s");
-    }
-
-    #[test]
-    fn can_create_weight_schemes() {
-        assert!(WeightScheme::parse(":(").is_err());
-        assert_eq!(
-            WeightScheme::parse("3.14r-12").unwrap(),
-            WeightScheme::BasedOnReference {
-                multiplier: 3.14,
-                offset: -12
-            }
-        );
-        assert_eq!(
-            WeightScheme::parse("3.14r+12").unwrap(),
-            WeightScheme::BasedOnReference {
-                multiplier: 3.14,
-                offset: 12
-            }
-        );
-        assert_eq!(
-            WeightScheme::parse("3.14r").unwrap(),
-            WeightScheme::BasedOnReference {
-                multiplier: 3.14,
-                offset: 0
-            }
-        );
-        assert_eq!(WeightScheme::parse("any").unwrap(), WeightScheme::Any);
-        assert_eq!(
-            WeightScheme::parse("add20").unwrap(),
-            WeightScheme::LinearBasedOnPrevious {
-                amount_to_increase: 20
-            }
-        );
-    }
-
-    #[test]
-    fn can_display_weight_schemes() {
-        assert_eq!(
-            format!("{}", WeightScheme::parse("3.14r-12").unwrap()),
-            "3.14r-12"
-        );
-        assert_eq!(
-            format!("{}", WeightScheme::parse("3.14r+12").unwrap()),
-            "3.14r+12"
-        );
-        assert_eq!(
-            format!("{}", WeightScheme::parse("3.14r").unwrap()),
-            "3.14r"
-        );
-        assert_eq!(format!("{}", WeightScheme::parse("any").unwrap()), "any");
-        assert_eq!(
-            format!("{}", WeightScheme::parse("add20").unwrap()),
-            "add20"
         );
     }
 }

@@ -71,3 +71,39 @@ impl Set {
         };
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use std::time::Duration;
+    use crate::domain::set::Set;
+
+    #[test]
+    fn can_create_rep_schemes() {
+        assert!(Set::parse(":(").is_err());
+        assert_eq!(
+            Set::parse("2-3").unwrap(),
+            Set::Range {
+                maximum_reps: 3,
+                minimum_reps: 2
+            }
+        );
+        assert_eq!(Set::parse("3+").unwrap(), Set::Amrap { minimum_reps: 3 });
+        assert_eq!(Set::parse("3").unwrap(), Set::Defined { reps: 3 });
+        assert_eq!(Set::parse("Any").unwrap(), Set::Any);
+        assert_eq!(
+            Set::parse("2s").unwrap(),
+            Set::Time {
+                duration: Duration::new(2, 0)
+            }
+        );
+    }
+
+    #[test]
+    fn can_display_rep_schemes() {
+        assert_eq!(format!("{}", Set::parse("2-3").unwrap()), "2-3");
+        assert_eq!(format!("{}", Set::parse("3+").unwrap()), "3+");
+        assert_eq!(format!("{}", Set::parse("3").unwrap()), "3");
+        assert_eq!(format!("{}", Set::parse("Any").unwrap()), "Any");
+        assert_eq!(format!("{}", Set::parse("2s").unwrap()), "2s");
+    }
+}

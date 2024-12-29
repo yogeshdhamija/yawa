@@ -59,3 +59,62 @@ impl WeightScheme {
         };
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use crate::domain::weight_scheme::*;
+
+    #[test]
+    fn can_create_weight_schemes() {
+        assert!(WeightScheme::parse(":(").is_err());
+        assert_eq!(
+            WeightScheme::parse("3.14r-12").unwrap(),
+            WeightScheme::BasedOnReference {
+                multiplier: 3.14,
+                offset: -12
+            }
+        );
+        assert_eq!(
+            WeightScheme::parse("3.14r+12").unwrap(),
+            WeightScheme::BasedOnReference {
+                multiplier: 3.14,
+                offset: 12
+            }
+        );
+        assert_eq!(
+            WeightScheme::parse("3.14r").unwrap(),
+            WeightScheme::BasedOnReference {
+                multiplier: 3.14,
+                offset: 0
+            }
+        );
+        assert_eq!(WeightScheme::parse("any").unwrap(), WeightScheme::Any);
+        assert_eq!(
+            WeightScheme::parse("add20").unwrap(),
+            WeightScheme::LinearBasedOnPrevious {
+                amount_to_increase: 20
+            }
+        );
+    }
+
+    #[test]
+    fn can_display_weight_schemes() {
+        assert_eq!(
+            format!("{}", WeightScheme::parse("3.14r-12").unwrap()),
+            "3.14r-12"
+        );
+        assert_eq!(
+            format!("{}", WeightScheme::parse("3.14r+12").unwrap()),
+            "3.14r+12"
+        );
+        assert_eq!(
+            format!("{}", WeightScheme::parse("3.14r").unwrap()),
+            "3.14r"
+        );
+        assert_eq!(format!("{}", WeightScheme::parse("any").unwrap()), "any");
+        assert_eq!(
+            format!("{}", WeightScheme::parse("add20").unwrap()),
+            "add20"
+        );
+    }
+}

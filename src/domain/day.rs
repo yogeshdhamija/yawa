@@ -39,3 +39,41 @@ impl Display for Day {
         write!(f, "{} | {}", self.name, lifts)
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use crate::domain::day::Day;
+    use crate::domain::lifting::Lift;
+
+    #[test]
+    fn can_parse_day() {
+        assert_eq!(
+            Day {
+                name: "Day Name".to_string(),
+                lifts: vec![
+                    Lift::parse("Bench press -> 3x5,1x5-6,1x6+ @ 2r").unwrap(),
+                    Lift::parse("Pullup -> 3x5,1x5-6,1x6+").unwrap()
+                ],
+            },
+            Day::parse("Day Name | Bench press -> 3x5,1x5-6,1x6+ @ 2r | Pullup -> 3x5,1x5-6,1x6+")
+                .unwrap()
+        );
+    }
+
+    #[test]
+    fn can_create_day() {
+        assert_eq!(
+            format!(
+                "{}",
+                Day {
+                    name: "Day Name".to_string(),
+                    lifts: vec![
+                        Lift::parse("Bench press -> 3x5,1x5-6,1x6+ @ 2r").unwrap(),
+                        Lift::parse("Pullup -> 3x5,1x5-6,1x6+").unwrap()
+                    ],
+                }
+            ),
+            "Day Name | Bench press -> 3x5,1x5-6,1x6+ @ 2r | Pullup -> 3x5,1x5-6,1x6+"
+        );
+    }
+}
