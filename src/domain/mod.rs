@@ -4,3 +4,4 @@ pub mod lifting;
 pub mod programs;
 /// Useful primitives: user actions
 pub mod user_input;
+pub mod weight_scheme;
