@@ -10,14 +10,14 @@ lto = true
 strip = true
 
 [dependencies]
-clap = { version = "*", features = ["derive"] } # Used for the controller, to interpret user-entered commands
-anyhow = "*"                                    # Used for propogating errors up throughout the lifting
+clap = { version = "*", features = ["derive"] } # Used for the TUI adapter, to interpret user-entered commands
+anyhow = "*"                                    # Used everywhere (including domain) for propogating errors
 serde = { version="*", features = ["derive"] }  # Used by the filesystem adapter to persist/summon data
 serde_json = "*"                                # Used by the filesystem adapter to persist/summon data
 chrono = "*"                                    # Used by the filesystem adapter to log timestamps
 
 [dev-dependencies]
-assert_cmd = "*"
-predicates = "*"
-rand = "*"
-pretty_assertions = "*"
+assert_cmd = "*"        # Used by binary tests to run CLI program
+predicates = "*"         # Used by binary tests to assert on CLI program's output
+rand = "*"          # Used by binary tests to create directories with random names
+pretty_assertions = "*"             # Used in tests (including in domain) to make test output prettier for diffs between large objects
